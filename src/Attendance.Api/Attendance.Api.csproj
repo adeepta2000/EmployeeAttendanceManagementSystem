@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Local secrets such as Jwt:SigningKey live in user-secrets, never in appsettings (spec §2.6). -->
+    <UserSecretsId>f40779ba-9daa-449a-b9ef-f1540ae6e581</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Attendance.Application\Attendance.Application.csproj" />
+    <!-- Composition root only: Infrastructure types may be used in Program.cs and nowhere else in Api. -->
+    <ProjectReference Include="..\Attendance.Infrastructure\Attendance.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+    <!-- Lets `dotnet ef` use this project as the migrations startup project. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

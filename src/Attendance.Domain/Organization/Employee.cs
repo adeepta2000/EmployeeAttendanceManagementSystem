@@ -1,0 +1,63 @@
+using Attendance.Domain.Common;
+
+namespace Attendance.Domain.Organization;
+
+/// <summary>
+/// The employee master (FR-1.2). An employee may exist without a login (FR-1.3), and is retired with
+/// <see cref="IsActive"/> = false so their history is preserved (FR-1.5).
+/// </summary>
+public sealed class Employee : BaseEntity, IHasPublicId
+{
+    public const int EmployeeCodeMaxLength = 30;
+    public const int NameMaxLength = 100;
+    public const int EmailMaxLength = 256;
+    public const int PhoneMaxLength = 20;
+    public const int PhotoPathMaxLength = 500;
+
+    public Guid PublicId { get; private set; } = Guid.NewGuid();
+
+    public required string EmployeeCode { get; set; }
+
+    public required string FirstName { get; set; }
+
+    public required string LastName { get; set; }
+
+    public required DateOnly DateOfBirth { get; set; }
+
+    public required Gender Gender { get; set; }
+
+    public string? Email { get; set; }
+
+    public string? Phone { get; set; }
+
+    public required DateOnly JoiningDate { get; set; }
+
+    public DateOnly? ConfirmationDate { get; set; }
+
+    public DateOnly? SeparationDate { get; set; }
+
+    public required EmploymentType EmploymentType { get; set; }
+
+    public bool IsActive { get; set; } = true;
+
+    public string? PhotoPath { get; set; }
+
+    public long DepartmentId { get; set; }
+
+    public Department Department { get; set; } = null!;
+
+    public long DesignationId { get; set; }
+
+    public Designation Designation { get; set; } = null!;
+
+    public long WorkLocationId { get; set; }
+
+    public WorkLocation WorkLocation { get; set; } = null!;
+
+    public long? ReportingManagerId { get; set; }
+
+    public Employee? ReportingManager { get; set; }
+
+    // DefaultShiftId and WeeklyOffPatternId (spec §3.2) are added in Phase 2 together with the
+    // Shifts and WeeklyOffPatterns tables they reference.
+}

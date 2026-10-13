@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Attendance.Domain\Attendance.Domain.csproj" />
+    <ProjectReference Include="..\Attendance.Shared\Attendance.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Handlers are internal; the handler tests construct them directly. -->
+    <InternalsVisibleTo Include="Attendance.Application.Tests" />
+  </ItemGroup>
+
+</Project>

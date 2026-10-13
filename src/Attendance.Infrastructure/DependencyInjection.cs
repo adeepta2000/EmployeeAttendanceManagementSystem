@@ -1,0 +1,53 @@
+using Attendance.Application.Common.Interfaces;
+using Attendance.Application.Identity.Abstractions;
+using Attendance.Infrastructure.Identity;
+using Attendance.Infrastructure.Persistence;
+using Attendance.Infrastructure.Persistence.Interceptors;
+using Attendance.Infrastructure.Persistence.Repositories;
+using Attendance.Infrastructure.Persistence.Seeding;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace Attendance.Infrastructure;
+
+public static class DependencyInjection
+{
+    /// <summary>Health-check tag for the checks behind <c>/health/ready</c>.</summary>
+    public const string ReadinessTag = "ready";
+
+    /// <summary>
+    /// Registers persistence, repositories and the identity services. The host must also register an
+    /// <c>ICurrentUser</c> implementation and bind <c>AuthOptions</c> and <c>JwtOptions</c>.
+    /// </summary>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("Attendance")
+            ?? throw new InvalidOperationException("Connection string 'Attendance' is not configured.");
+
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddScoped<AuditableEntityInterceptor>();
+
+        services.AddDbContext<AttendanceDbContext>((serviceProvider, options) => options
+            .UseSqlServer(connectionString)
+            .AddInterceptors(serviceProvider.GetRequiredService<AuditableEntityInterceptor>()));
+
+        services.AddOptions<DatabaseOptions>().Bind(configuration.GetSection(DatabaseOptions.SectionName));
+        services.AddScoped<DatabaseInitializer>();
+        services.AddScoped<IdentitySeeder>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IUserContextService, UserContextService>();
+
+        services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
+        services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
+        services.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
+
+        services.AddHealthChecks().AddDbContextCheck<AttendanceDbContext>("database", tags: [ReadinessTag]);
+
+        return services;
+    }
+}
