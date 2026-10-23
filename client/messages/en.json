@@ -1,0 +1,432 @@
+{
+  "app": {
+    "name": "Nordwin Attendance",
+    "description": "Attendance, overtime and leave for Nordwin Textiles Ltd.",
+    "company": "Nordwin Textiles Ltd."
+  },
+  "common": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "notSet": "Not set",
+    "cancel": "Cancel",
+    "save": "Save changes"
+  },
+  "errors": {
+    "unexpected": "Something went wrong. Try again; if it keeps happening, tell IT what you were doing.",
+    "network": "Can't reach the attendance server. Check your connection, then try again.",
+    "unavailable": "The attendance server isn't responding. Wait a moment, then try again.",
+    "rateLimited": "Too many attempts in a short time. Wait a minute, then try again.",
+    "server": "The server ran into a problem. Try again; if it keeps happening, tell IT.",
+    "serverWithReference": "The server ran into a problem. Try again; if it keeps happening, give IT this reference: {reference}.",
+    "forbidden": "You don't have permission to do this. Ask HR or IT if you need it.",
+    "notFound": "That record no longer exists. Reload the page to see the current data."
+  },
+  "validation": {
+    "required": "Fill this in.",
+    "choose": "Choose one from the list.",
+    "tooLong": "Use {max} characters or fewer.",
+    "code": "Use up to {max} letters, digits or - _ . /, starting with a letter or digit.",
+    "email": "Enter an email address like name@example.com.",
+    "phone": "Use digits, spaces or dashes, optionally starting with +.",
+    "date": "Enter a full date: day, month and year.",
+    "dateTooEarly": "Enter a date after 1900.",
+    "minimumAge": "The employee must be at least {years} on the joining date. Check the date of birth and joining date.",
+    "confirmationBeforeJoining": "The confirmation date can't be before the joining date.",
+    "passwordLength": "Use at least {min} characters.",
+    "passwordMismatch": "The passwords don't match. Type the new password again.",
+    "passwordSame": "Choose a password that is different from your current one."
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Use your work email and password.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "forgot": "Forgot your password?",
+      "invalidCredentials": "That email and password don't match an active account. Check both and try again. After 5 failed attempts the account locks for 15 minutes.",
+      "rateLimited": "Too many sign-in attempts from this network. Wait a minute, then try again.",
+      "reason": {
+        "expired": "Your session ended. Sign in again to carry on where you were.",
+        "signed-out": "You've signed out.",
+        "unavailable": "The attendance server didn't respond, so your session couldn't be renewed. Try signing in again.",
+        "password-changed": "Your password was changed. Sign in with the new one."
+      }
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your work email and we'll send you a link to set a new password.",
+      "email": "Work email",
+      "submit": "Send reset link",
+      "backToLogin": "Back to sign in",
+      "sentTitle": "Check your email",
+      "sentBody": "If that address belongs to an account, a reset link is on its way. It can be used once. Nothing after a few minutes? Check your spam folder, or ask HR to reset your password."
+    },
+    "reset": {
+      "title": "Set a new password",
+      "subtitle": "Choose a password you don't use anywhere else.",
+      "newPassword": "New password",
+      "confirmPassword": "Type it again",
+      "passwordHint": "At least {min} characters. A short sentence is easy to remember and hard to guess.",
+      "submit": "Set password",
+      "requestNew": "Request a new link",
+      "doneTitle": "Password changed",
+      "doneBody": "You can now sign in with your new password.",
+      "signIn": "Sign in",
+      "errors": {
+        "missingToken": "This reset link is incomplete. Open the link from the email again, or request a new one."
+      }
+    },
+    "change": {
+      "title": "Change your password",
+      "subtitle": "Enter your current password, then the new one twice.",
+      "forced": "You need to set a new password before you can continue.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Type the new password again",
+      "passwordHint": "At least {min} characters. A short sentence is easy to remember and hard to guess.",
+      "submit": "Change password",
+      "done": "Password changed.",
+      "signOutInstead": "Sign out instead",
+      "cancel": "Cancel"
+    }
+  },
+  "shell": {
+    "productName": "Nordwin Attendance",
+    "skipToContent": "Skip to content",
+    "collapseSidebar": "Collapse the menu",
+    "expandSidebar": "Expand the menu",
+    "search": {
+      "trigger": "Search employees or jump to a screen…",
+      "title": "Search",
+      "description": "Find an employee by code or name, or jump to a screen.",
+      "placeholder": "Employee code, name or screen",
+      "hint": "Type at least 2 characters to search employees.",
+      "empty": "No employee or screen matches. Check the spelling, or search by employee code.",
+      "employees": "Employees",
+      "screens": "Go to"
+    },
+    "user": {
+      "menuLabel": "Account menu for {name}",
+      "systemAccount": "System account",
+      "signedIn": "Signed in",
+      "profile": "My profile",
+      "changePassword": "Change password",
+      "signOut": "Sign out"
+    },
+    "desktopOnly": {
+      "title": "Open this on a larger screen",
+      "body": "Setup and master-data screens need a desktop or laptop. On a phone, use the punch, attendance and leave screens instead."
+    }
+  },
+  "nav": {
+    "label": "Main menu",
+    "soon": "Soon",
+    "soonLabel": "{label} (coming soon)",
+    "groups": {
+      "attendance": "Attendance",
+      "leave": "Leave",
+      "overtime": "Overtime",
+      "setup": "Setup",
+      "admin": "Admin"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "myAttendance": "My attendance",
+      "register": "Register",
+      "musterRoll": "Muster roll",
+      "processing": "Processing",
+      "regularizations": "Regularizations",
+      "punchImport": "Punch import",
+      "periodLock": "Period lock",
+      "approvals": "Approvals",
+      "myLeave": "My leave",
+      "leaveLedger": "Leave ledger",
+      "myOvertime": "My overtime",
+      "otAuthorization": "OT authorization",
+      "otReview": "OT review",
+      "reports": "Reports",
+      "employees": "Employees",
+      "orgStructure": "Departments & designations",
+      "shifts": "Shifts",
+      "weeklyOffs": "Weekly offs",
+      "rosters": "Rosters",
+      "leaveTypes": "Leave types",
+      "holidays": "Holidays",
+      "users": "Users & roles",
+      "auditLog": "Audit log",
+      "settings": "Settings"
+    }
+  },
+  "table": {
+    "sortBy": "Sort by {column}",
+    "pagination": {
+      "label": "Pages",
+      "showing": "{from}–{to} of {total}",
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {page} of {pages}",
+      "previous": "Previous page",
+      "next": "Next page"
+    },
+    "density": {
+      "compact": "Compact rows",
+      "switchToComfortable": "Switch to comfortable rows",
+      "switchToCompact": "Switch to compact rows"
+    }
+  },
+  "status": {
+    "present": "Present",
+    "absent": "Absent",
+    "late": "Late",
+    "leave": "On leave",
+    "weeklyOff": "Weekly off",
+    "holiday": "Holiday",
+    "overtime": "Overtime"
+  },
+  "employees": {
+    "employmentTypes": {
+      "Permanent": "Permanent",
+      "Contract": "Contract",
+      "Probation": "Probation",
+      "Intern": "Intern"
+    },
+    "genders": {
+      "Male": "Male",
+      "Female": "Female",
+      "Other": "Other"
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "dateOfBirth": "Date of birth",
+      "gender": "Gender",
+      "email": "Email",
+      "phone": "Phone",
+      "account": "Login account",
+      "employeeCode": "Employee code",
+      "employmentType": "Employment type",
+      "department": "Department",
+      "designation": "Designation",
+      "workLocation": "Work location",
+      "reportingManager": "Reporting manager",
+      "joiningDate": "Joining date",
+      "confirmationDate": "Confirmation date",
+      "separationDate": "Separation date",
+      "status": "Status"
+    },
+    "list": {
+      "title": "Employees",
+      "count": "{count, plural, =0 {No employees} one {# employee} other {# employees}}",
+      "loadingCount": "Loading…",
+      "add": "Add employee",
+      "caption": "Employees, sortable by code, name, department, designation and joining date",
+      "retry": "Try again",
+      "empty": "No employees yet.",
+      "emptyFiltered": "No employees match these filters. Clear a filter, or search by employee code.",
+      "columns": {
+        "code": "Code",
+        "name": "Name",
+        "department": "Department",
+        "designation": "Designation",
+        "location": "Location",
+        "type": "Type",
+        "manager": "Manager",
+        "joined": "Joined",
+        "status": "Status"
+      },
+      "filters": {
+        "label": "Filter employees",
+        "search": "Search employees",
+        "searchPlaceholder": "Code or name",
+        "department": "Department",
+        "designation": "Designation",
+        "location": "Location",
+        "type": "Type",
+        "status": "Status",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "statusAll": "Active and inactive",
+        "clear": "Clear filters",
+        "allDepartments": "All departments",
+        "allDesignations": "All designations",
+        "allLocations": "All locations",
+        "allTypes": "All types"
+      }
+    },
+    "detail": {
+      "pageTitle": "Employee",
+      "editTitle": "Edit {name}",
+      "newTitle": "Add employee",
+      "newDescription": "Fill in both tabs. No login account is created; floor workers who only punch on a device don't need one.",
+      "notFound": "This employee doesn't exist, or isn't in your part of the organization. Check the link, or find them in the employee list.",
+      "backToList": "Back to employees",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "tabHasErrors": "has fields to fix",
+      "tabs": {
+        "profile": "Profile",
+        "employment": "Employment",
+        "shift": "Shift",
+        "leave": "Leave balance",
+        "documents": "Documents"
+      },
+      "sections": {
+        "personal": "Personal details",
+        "contact": "Contact",
+        "position": "Position",
+        "dates": "Dates"
+      },
+      "account": {
+        "yes": "Can sign in",
+        "no": "No login (punches on a device only)"
+      },
+      "shift": {
+        "title": "No shift assigned yet",
+        "body": "The default shift, roster and weekly-off pattern are set here once the Shift module is switched on."
+      },
+      "leave": {
+        "title": "No leave balances yet",
+        "body": "Balances by leave type appear here once leave types are set up in the Leave module."
+      },
+      "documents": {
+        "title": "No documents yet",
+        "body": "Contracts and other files can be attached here once document storage is switched on."
+      }
+    },
+    "form": {
+      "saved": "Changes saved.",
+      "created": "{name} added.",
+      "retired": "{name} (retired)",
+      "choose": "Choose…",
+      "loading": "Loading…",
+      "emailHint": "Optional. Used for notifications and password resets.",
+      "codeHint": "Stored in capitals, e.g. NW-0104.",
+      "noManager": "No reporting manager",
+      "confirmationHint": "Leave empty while the employee is on probation.",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "create": "Add employee"
+    },
+    "picker": {
+      "searchPlaceholder": "Search by code or name",
+      "empty": "No active employee matches. Search by employee code or part of the name.",
+      "clear": "Remove {name}"
+    },
+    "deactivate": {
+      "title": "Deactivate {name}?",
+      "description": "Their attendance, leave and overtime history is kept. They can be reactivated later.",
+      "descriptionWithLogin": "Their attendance, leave and overtime history is kept, and their login is switched off so they can no longer sign in. They can be reactivated later.",
+      "separationDate": "Last working day",
+      "cancel": "Cancel",
+      "confirm": "Deactivate employee",
+      "done": "{name} deactivated."
+    },
+    "reactivate": {
+      "title": "Reactivate {name}?",
+      "description": "The separation date is cleared and they can be rostered and paid again.",
+      "descriptionWithLogin": "The separation date is cleared. Their login stays switched off until IT turns it back on in user management.",
+      "cancel": "Cancel",
+      "confirm": "Reactivate employee",
+      "done": "{name} reactivated."
+    }
+  },
+  "org": {
+    "title": "Departments & designations",
+    "description": "The organization structure employees are assigned to. Records are retired, never deleted.",
+    "tabs": {
+      "departments": "Departments",
+      "designations": "Designations"
+    },
+    "toolbar": {
+      "label": "Filter the list",
+      "search": "Search",
+      "searchPlaceholder": "Code or name",
+      "status": "Status",
+      "statusActive": "Active",
+      "statusRetired": "Retired",
+      "statusAll": "Active and retired"
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit {name}",
+      "retire": "Retire {name}",
+      "restore": "Restore {name}"
+    },
+    "departments": {
+      "add": "Add department",
+      "addTitle": "Add a department",
+      "editTitle": "Edit {name}",
+      "caption": "Departments",
+      "saved": "{name} saved.",
+      "created": "{name} added.",
+      "emptyFiltered": "No department matches. Search by code or part of the name.",
+      "empty": {
+        "active": "No active departments. Add one to start assigning employees.",
+        "retired": "No retired departments.",
+        "all": "No departments yet. Add one to start assigning employees."
+      },
+      "columns": {
+        "parent": "Parent department",
+        "head": "Head"
+      },
+      "noParent": "None (top level)",
+      "noHead": "No head",
+      "headHint": "Optional. An active employee in your part of the organization.",
+      "retiredOption": "{name} (retired)",
+      "retire": {
+        "title": "Retire {name}?",
+        "description": "It stays in employees' history but can't be assigned any more. Move its active employees and sub-departments first, or the retirement is refused.",
+        "confirm": "Retire department",
+        "done": "{name} retired."
+      },
+      "restore": {
+        "title": "Restore {name}?",
+        "description": "It can be assigned to employees and sub-departments again.",
+        "confirm": "Restore department",
+        "done": "{name} restored."
+      }
+    },
+    "designations": {
+      "add": "Add designation",
+      "addTitle": "Add a designation",
+      "editTitle": "Edit {name}",
+      "caption": "Designations",
+      "saved": "{name} saved.",
+      "created": "{name} added.",
+      "emptyFiltered": "No designation matches. Search by code, name or grade.",
+      "empty": {
+        "active": "No active designations. Add one to start assigning employees.",
+        "retired": "No retired designations.",
+        "all": "No designations yet. Add one to start assigning employees."
+      },
+      "columns": {
+        "grade": "Grade"
+      },
+      "gradeHint": "Optional pay grade, e.g. G-4.",
+      "retire": {
+        "title": "Retire {name}?",
+        "description": "It stays in employees' history but can't be assigned any more. Give its active employees another designation first, or the retirement is refused.",
+        "confirm": "Retire designation",
+        "done": "{name} retired."
+      },
+      "restore": {
+        "title": "Restore {name}?",
+        "description": "It can be assigned to employees again.",
+        "confirm": "Restore designation",
+        "done": "{name} restored."
+      }
+    }
+  },
+  "notFound": {
+    "title": "There's nothing at this address",
+    "body": "The link may be mistyped, or the screen may not exist yet.",
+    "home": "Go to the start page"
+  }
+}

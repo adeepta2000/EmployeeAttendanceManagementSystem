@@ -1,0 +1,198 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* The app has one light theme (§4.2). shadcn's dark: classes apply only under a .dark class, which is
+   never set, so they stay inert instead of following the OS colour scheme. */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens (spec §4.2). Each token is a CSS custom property on :root, exposed to Tailwind through
+ * @theme so later phases use the utilities (bg-canvas, text-ink, text-present, h-row, text-13) and never
+ * a raw hex value or pixel size.
+ *
+ * Status colours are data, not decoration: use them only to show an attendance status, always next to
+ * its letter code (lib/status.ts, components/status-pill.tsx). Errors and destructive actions use
+ * --danger, which is deliberately a different red from --absent.
+ */
+:root {
+  /* Palette: an industrial, low-chroma base, so status colours are the only saturated things on screen. */
+  --surface: #ffffff; /* cards, table rows */
+  --canvas: #f5f6f8; /* page background */
+  --ink: #14181f; /* primary text */
+  --ink-muted: #5c6675; /* secondary text, column headers */
+  --rule: #e1e5ea; /* borders, dividers */
+  --brand: #1b4d8f; /* deep industrial blue: nav, primary actions */
+  --brand-soft: #e8f0fb; /* selected rows, active nav */
+
+  /* Status colours (letter codes in lib/status.ts). */
+  --present: #0f7b4f;
+  --absent: #c0392b;
+  --late: #c77700;
+  --leave: #6b4ead;
+  --weekly-off: #7a8494;
+  --holiday: #0e7490;
+  --overtime: #b8500f;
+
+  /* Not in §4.2: form errors and destructive actions need a red that isn't the "absent" status. */
+  --danger: #b42318;
+
+  /* Layout (§4.2, §4.3): 8px spacing base; every size below is a multiple of it. */
+  --space-unit: 8px;
+  --topbar-height: calc(var(--space-unit) * 7); /* 56px */
+  --sidebar-width: calc(var(--space-unit) * 28); /* 224px */
+  --sidebar-width-collapsed: calc(var(--space-unit) * 8); /* 64px */
+  --row-height: calc(var(--space-unit) * 5); /* 40px, comfortable */
+  --row-height-compact: calc(var(--space-unit) * 4); /* 32px, the compact toggle */
+  --form-max-width: 720px;
+
+  /* One radius family: 6px on cards and inputs, 4px on status pills. */
+  --radius: 6px;
+  --radius-pill: 4px;
+
+  /* shadcn/ui's semantic variables, mapped onto the palette so its components need no colours of their own. */
+  --background: var(--surface);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
+  --secondary: var(--brand-soft);
+  --secondary-foreground: var(--brand);
+  --muted: var(--canvas);
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--brand-soft);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--brand);
+}
+
+@theme {
+  /* 8px spacing base: p-1 is 8px, h-5 is 40px, p-0.5 is the 4px half step. */
+  --spacing: 8px;
+
+  /* Type scale: 12 / 13 / 14 / 16 / 20 / 24 / 30. Body 14 (text-14), table cells 13 (text-13), page
+     titles 20 (text-20). Tailwind's t-shirt sizes are removed so nothing off-scale can creep in. */
+  --text-*: initial;
+  --text-12: 12px;
+  --text-12--line-height: 16px;
+  --text-13: 13px;
+  --text-13--line-height: 18px;
+  --text-14: 14px;
+  --text-14--line-height: 20px;
+  --text-16: 16px;
+  --text-16--line-height: 24px;
+  --text-20: 20px;
+  --text-20--line-height: 28px;
+  --text-24: 24px;
+  --text-24--line-height: 32px;
+  --text-30: 30px;
+  --text-30--line-height: 36px;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* JetBrains Mono is for times, durations and employee codes only (§4.2). */
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+
+  --color-surface: var(--surface);
+  --color-canvas: var(--canvas);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-rule: var(--rule);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-danger: var(--danger);
+
+  --color-present: var(--present);
+  --color-absent: var(--absent);
+  --color-late: var(--late);
+  --color-leave: var(--leave);
+  --color-weekly-off: var(--weekly-off);
+  --color-holiday: var(--holiday);
+  --color-overtime: var(--overtime);
+
+  --spacing-topbar: var(--topbar-height);
+  --spacing-sidebar: var(--sidebar-width);
+  --spacing-sidebar-collapsed: var(--sidebar-width-collapsed);
+  --spacing-row: var(--row-height);
+  --spacing-row-compact: var(--row-height-compact);
+  --container-form: var(--form-max-width);
+
+  --radius-pill: var(--radius-pill);
+  --radius-sm: var(--radius-pill);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-14 text-ink antialiased;
+  }
+
+  /* §4.7: a visible 2px focus ring on --brand, for keyboard users only. */
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  /* §4.2: digits in every table cell take equal width, so times, counts and dates line up in columns. */
+  td,
+  th {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* §4.7: motion only explains a change; with reduced motion it is switched off entirely. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Numbers outside tables that must line up or not jitter while they change (counters, pagers). */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
