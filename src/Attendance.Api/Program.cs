@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Attendance.Api.Middleware;
 using Attendance.Api.Services;
 using Attendance.Api.Setup;
@@ -36,7 +37,10 @@ builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddControllers();
+// Enums travel as their names ("Permanent", not 3). Numbers are refused, so a client can't send a
+// value that isn't a defined member.
+builder.Services.AddControllers().AddJsonOptions(options =>
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(namingPolicy: null, allowIntegerValues: false)));
 builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
     context.ProblemDetails.Extensions["correlationId"] = context.HttpContext.TraceIdentifier);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

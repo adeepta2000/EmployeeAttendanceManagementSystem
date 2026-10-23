@@ -1,4 +1,5 @@
 using Attendance.Infrastructure.Persistence.Seeding;
+using Attendance.Infrastructure.Persistence.Seeding.Demo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,10 +19,14 @@ public sealed class DatabaseOptions
     public bool MigrateOnStartup { get; set; } = true;
 }
 
-/// <summary>Brings the database up to date at startup: migrations first, then reference data.</summary>
+/// <summary>
+/// Brings the database up to date at startup: migrations first, then reference data, then (when
+/// enabled) the demo company.
+/// </summary>
 public sealed class DatabaseInitializer(
     AttendanceDbContext db,
     IdentitySeeder identitySeeder,
+    DemoDataSeeder demoDataSeeder,
     IOptions<DatabaseOptions> options,
     ILogger<DatabaseInitializer> logger)
 {
@@ -38,6 +43,7 @@ public sealed class DatabaseInitializer(
         }
 
         await identitySeeder.SeedAsync(cancellationToken);
+        await demoDataSeeder.SeedAsync(cancellationToken);
     }
 }
 

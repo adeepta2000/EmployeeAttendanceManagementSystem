@@ -1,10 +1,15 @@
+using Attendance.Application.Common.Files;
 using Attendance.Application.Common.Interfaces;
 using Attendance.Application.Identity.Abstractions;
+using Attendance.Application.Organization.Abstractions;
+using Attendance.Domain.Organization;
+using Attendance.Infrastructure.Files;
 using Attendance.Infrastructure.Identity;
 using Attendance.Infrastructure.Persistence;
 using Attendance.Infrastructure.Persistence.Interceptors;
 using Attendance.Infrastructure.Persistence.Repositories;
 using Attendance.Infrastructure.Persistence.Seeding;
+using Attendance.Infrastructure.Persistence.Seeding.Demo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,10 +42,21 @@ public static class DependencyInjection
         services.AddScoped<DatabaseInitializer>();
         services.AddScoped<IdentitySeeder>();
 
+        services.AddOptions<DemoDataOptions>()
+            .Bind(configuration.GetSection(DemoDataOptions.SectionName))
+            .Validate(o => o.IsValid, DemoDataOptions.ValidationMessage);
+        services.AddScoped<DemoDataSeeder>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserContextService, UserContextService>();
+
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IMasterDataRepository<Designation>, MasterDataRepository<Designation>>();
+        services.AddScoped<IMasterDataRepository<WorkLocation>, MasterDataRepository<WorkLocation>>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddSingleton<ISpreadsheetReader, ClosedXmlSpreadsheetReader>();
 
         services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();

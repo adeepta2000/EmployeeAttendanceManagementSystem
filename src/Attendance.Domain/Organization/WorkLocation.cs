@@ -2,7 +2,7 @@ using Attendance.Domain.Common;
 
 namespace Attendance.Domain.Organization;
 
-public sealed class WorkLocation : BaseEntity, IHasPublicId
+public sealed class WorkLocation : BaseEntity, IMasterData
 {
     public const int CodeMaxLength = 30;
     public const int NameMaxLength = 100;

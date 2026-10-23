@@ -14,8 +14,11 @@ public static class SystemRoles
     public const string Manager = "Manager";
     public const string Employee = "Employee";
 
+    // Employee.Read lets everyone open their own record; data scoping (FR-8.3) narrows it to themselves,
+    // or to their reporting tree for a manager.
     private static readonly string[] SelfService =
     [
+        Permissions.Employee.Read,
         Permissions.Attendance.Punch,
         Permissions.Regularization.Request,
         Permissions.Leave.Apply,
@@ -24,7 +27,6 @@ public static class SystemRoles
     private static readonly string[] HROfficerPermissions =
     [
         .. SelfService,
-        Permissions.Employee.Read,
         Permissions.Employee.Write,
         Permissions.Employee.Import,
         Permissions.Scope.Company,
@@ -71,7 +73,6 @@ public static class SystemRoles
         new(Manager, "Line manager: approvals and rosters for their reporting tree",
         [
             .. SelfService,
-            Permissions.Employee.Read,
             Permissions.Roster.Write,
             Permissions.Regularization.Approve,
             Permissions.Leave.Approve,

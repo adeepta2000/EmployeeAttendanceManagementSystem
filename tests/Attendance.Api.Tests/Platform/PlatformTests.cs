@@ -2,10 +2,12 @@ using System.Net;
 using System.Net.Http.Json;
 using Attendance.Api.Tests.Infrastructure;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Attendance.Api.Tests.Platform;
 
-/// <summary>Health checks, correlation IDs and error responses.</summary>
+/// <summary>Health checks, correlation IDs, error responses and the API document.</summary>
 [Collection(ApiCollection.Name)]
 public sealed class PlatformTests(AttendanceApiFactory api)
 {
@@ -37,6 +39,18 @@ public sealed class PlatformTests(AttendanceApiFactory api)
         response.Headers.GetValues(CorrelationHeader).Should().Equal("bff-req-42");
         var problem = await response.ReadProblemAsync(HttpStatusCode.Unauthorized);
         problem.Extensions["correlationId"]!.ToString().Should().Be("bff-req-42");
+    }
+
+    [Fact]
+    public void The_OpenAPI_document_generates_and_lists_the_organization_endpoints()
+    {
+        var document = api.Services.GetRequiredService<ISwaggerProvider>().GetSwagger("v1");
+
+        document.Paths.Keys.Should().Contain(
+        [
+            "/api/departments", "/api/departments/{publicId}", "/api/designations", "/api/work-locations",
+            "/api/employees", "/api/employees/{publicId}", "/api/employees/{publicId}/deactivate", "/api/employees/import",
+        ]);
     }
 
     [Theory]

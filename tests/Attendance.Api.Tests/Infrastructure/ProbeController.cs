@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Attendance.Api.Tests.Infrastructure;
 
 /// <summary>
-/// Test-only endpoints, added to the app by <see cref="AttendanceApiFactory"/>. No business endpoint
-/// exists yet, so these exercise the authorization setup through the real pipeline.
+/// Test-only endpoints, added to the app by <see cref="AttendanceApiFactory"/>. They exercise the
+/// authorization setup through the real pipeline, independent of any business endpoint.
 /// </summary>
 [ApiController]
 [Route("test/probe")]

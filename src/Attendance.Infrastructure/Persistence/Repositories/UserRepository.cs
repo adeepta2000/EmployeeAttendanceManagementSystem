@@ -14,6 +14,9 @@ internal sealed class UserRepository(AttendanceDbContext db) : IUserRepository
             .SingleOrDefaultAsync(u => u.Email == normalized, cancellationToken);
     }
 
+    public Task<User?> FindByEmployeeIdAsync(long employeeId, CancellationToken cancellationToken) =>
+        db.Users.SingleOrDefaultAsync(u => u.EmployeeId == employeeId, cancellationToken);
+
     public async Task<IReadOnlyList<string>> GetPermissionCodesAsync(long userId, CancellationToken cancellationToken) =>
         await db.UserRoles
             .Where(ur => ur.UserId == userId)

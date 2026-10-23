@@ -1,5 +1,6 @@
 using Attendance.Application.Identity.Abstractions;
 using Attendance.Domain.Identity;
+using Attendance.Domain.Organization;
 using Attendance.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,11 +14,12 @@ namespace Attendance.Api.Tests.Infrastructure;
 /// The real API over a real SQL Server database. Starting it runs the startup guard, so the tests
 /// also prove that the migrations apply and the seed data loads.
 /// </summary>
-public sealed class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     public const string Password = "Nordwin-Test-Pa55word";
 
     private static int _lastClientIp;
+    private static int _lastCode;
 
     private readonly TestSqlServer _sqlServer = new();
 
@@ -41,12 +43,18 @@ public sealed class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyn
         builder.UseSetting("ConnectionStrings:Attendance", _sqlServer.ConnectionString);
         builder.UseSetting("Jwt:SigningKey", "integration-test-signing-key-of-at-least-32-chars");
         builder.UseSetting("Serilog:MinimumLevel:Default", "Error");
+        ConfigureSettings(builder);
 
         builder.ConfigureTestServices(services =>
         {
             services.AddSingleton<IStartupFilter, TestClientIpStartupFilter>();
             services.AddControllers().AddApplicationPart(typeof(ProbeController).Assembly);
         });
+    }
+
+    /// <summary>Extra settings for a factory variant.</summary>
+    protected virtual void ConfigureSettings(IWebHostBuilder builder)
+    {
     }
 
     /// <summary>A client whose requests come from their own IP, so tests never share a rate-limit bucket.</summary>
@@ -64,8 +72,15 @@ public sealed class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyn
         return $"10.{(n >> 16) & 255}.{(n >> 8) & 255}.{n & 255}";
     }
 
-    /// <summary>Adds an active user with <see cref="Password"/>, optionally in one of the seeded system roles.</summary>
-    public async Task<TestUser> CreateUserAsync(string? role = null)
+    /// <summary>A code no other test uses (every test shares one database), upper-case as the API stores codes.</summary>
+    public static string UniqueCode(string prefix) =>
+        $"{prefix}-{Interlocked.Increment(ref _lastCode)}-{Guid.NewGuid():N}"[..20].ToUpperInvariant();
+
+    /// <summary>
+    /// Adds an active user with <see cref="Password"/>, optionally in one of the seeded system roles and
+    /// linked to an employee.
+    /// </summary>
+    public async Task<TestUser> CreateUserAsync(string? role = null, TestEmployee? employee = null)
     {
         await using var scope = Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
@@ -75,6 +90,7 @@ public sealed class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyn
         {
             Email = $"user.{Guid.NewGuid():N}@nordwin.example",
             PasswordHash = passwordHasher.Hash(Password),
+            EmployeeId = employee?.Id,
         };
         if (role is not null)
         {
@@ -86,6 +102,84 @@ public sealed class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyn
         return new TestUser(user.Email, user.PublicId);
     }
 
+    /// <summary>Adds a custom (non-system) role granting exactly these permissions; returns its name.</summary>
+    public async Task<string> CreateRoleAsync(params string[] permissionCodes)
+    {
+        await using var scope = Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
+
+        var role = new Role { Name = UniqueCode("role") };
+        foreach (var permission in await db.Permissions.Where(p => permissionCodes.Contains(p.Code)).ToListAsync(Ct))
+        {
+            role.RolePermissions.Add(new RolePermission { Role = role, Permission = permission });
+        }
+
+        db.Roles.Add(role);
+        await db.SaveChangesAsync(Ct);
+        return role.Name;
+    }
+
+    /// <summary>A department, designation and work location of its own, so tests don't see each other's employees.</summary>
+    public async Task<TestOrg> CreateOrgAsync()
+    {
+        await using var scope = Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
+
+        var department = new Department { Code = UniqueCode("D"), Name = "Test department" };
+        var designation = new Designation { Code = UniqueCode("G"), Name = "Test designation" };
+        var location = new WorkLocation { Code = UniqueCode("L"), Name = "Test location" };
+        db.AddRange(department, designation, location);
+        await db.SaveChangesAsync(Ct);
+
+        return new TestOrg(
+            new TestRef(department.Id, department.PublicId, department.Code),
+            new TestRef(designation.Id, designation.PublicId, designation.Code),
+            new TestRef(location.Id, location.PublicId, location.Code));
+    }
+
+    /// <summary>Adds an employee straight to the database (no API, no scoping), with no login account.</summary>
+    public async Task<TestEmployee> CreateEmployeeAsync(
+        TestOrg org,
+        TestEmployee? manager = null,
+        string firstName = "Test",
+        string lastName = "Employee",
+        bool isActive = true,
+        EmploymentType employmentType = EmploymentType.Permanent,
+        DateOnly? joiningDate = null)
+    {
+        await using var scope = Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
+
+        var employee = new Employee
+        {
+            EmployeeCode = UniqueCode("E"),
+            FirstName = firstName,
+            LastName = lastName,
+            DateOfBirth = new DateOnly(1990, 5, 17),
+            Gender = Gender.Female,
+            JoiningDate = joiningDate ?? new DateOnly(2020, 1, 1),
+            EmploymentType = employmentType,
+            IsActive = isActive,
+            SeparationDate = isActive ? null : new DateOnly(2026, 6, 30),
+            DepartmentId = org.Department.Id,
+            DesignationId = org.Designation.Id,
+            WorkLocationId = org.WorkLocation.Id,
+            ReportingManagerId = manager?.Id,
+        };
+        db.Employees.Add(employee);
+        await db.SaveChangesAsync(Ct);
+        return new TestEmployee(employee.Id, employee.PublicId, employee.EmployeeCode);
+    }
+
+    /// <summary>Signs in a new user and returns a client that sends their access token.</summary>
+    public async Task<ApiSession> SignInAsync(string role, TestEmployee? employee = null)
+    {
+        var user = await CreateUserAsync(role, employee);
+        var client = CreateApiClient();
+        var tokens = await client.SignInAsync(user);
+        return new ApiSession(client, tokens.AccessToken, user);
+    }
+
     /// <summary>Reads the database directly, in its own scope, to check what the API stored.</summary>
     public async Task<T> QueryDbAsync<T>(Func<AttendanceDbContext, Task<T>> query)
     {
@@ -95,6 +189,13 @@ public sealed class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyn
 }
 
 public sealed record TestUser(string Email, Guid PublicId);
+
+/// <summary>A row created by a test: its internal Id for database setup, PublicId for API calls.</summary>
+public sealed record TestRef(long Id, Guid PublicId, string Code);
+
+public sealed record TestOrg(TestRef Department, TestRef Designation, TestRef WorkLocation);
+
+public sealed record TestEmployee(long Id, Guid PublicId, string EmployeeCode);
 
 /// <summary>Every API test class joins this collection: one app and one database, tests run one at a time.</summary>
 [CollectionDefinition(Name)]

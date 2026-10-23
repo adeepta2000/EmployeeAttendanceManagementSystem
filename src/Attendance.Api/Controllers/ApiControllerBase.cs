@@ -7,6 +7,10 @@ namespace Attendance.Api.Controllers;
 [ApiController]
 public abstract class ApiControllerBase : ControllerBase
 {
+    /// <summary>200 with the value on success; otherwise the error as ProblemDetails.</summary>
+    protected IActionResult ToActionResult<T>(Result<T> result) =>
+        result.IsSuccess ? Ok(result.Value) : Problem(result.Error);
+
     /// <summary>
     /// Maps an expected failure to a ProblemDetails response. The error's code is added as the
     /// <c>code</c> extension so the client can branch on it without parsing the message.

@@ -17,6 +17,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <!-- Lets `dotnet ef` use this project as the migrations startup project. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
   </ItemGroup>
 
 </Project>

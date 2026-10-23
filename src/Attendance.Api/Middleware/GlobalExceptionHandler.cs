@@ -46,6 +46,12 @@ internal sealed class GlobalExceptionHandler(
                 Title = "Conflict",
                 Detail = "The data was changed by another request. Try again.",
             },
+            DuplicateKeyException => new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Conflict",
+                Detail = "A value that must be unique, such as a code, is already in use.",
+            },
             _ => new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,

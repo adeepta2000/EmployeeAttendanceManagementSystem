@@ -10,6 +10,9 @@ public interface IUserRepository
     /// </summary>
     Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken);
 
+    /// <summary>The login account linked to an employee, if they have one (FR-1.3). Tracked.</summary>
+    Task<User?> FindByEmployeeIdAsync(long employeeId, CancellationToken cancellationToken);
+
     /// <summary>The distinct permission codes granted to the user through all of their roles.</summary>
     Task<IReadOnlyList<string>> GetPermissionCodesAsync(long userId, CancellationToken cancellationToken);
 }

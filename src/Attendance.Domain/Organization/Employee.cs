@@ -60,4 +60,41 @@ public sealed class Employee : BaseEntity, IHasPublicId
 
     // DefaultShiftId and WeeklyOffPatternId (spec §3.2) are added in Phase 2 together with the
     // Shifts and WeeklyOffPatterns tables they reference.
+
+    /// <summary>Display name. Not stored.</summary>
+    public string FullName => $"{FirstName} {LastName}";
+
+    /// <summary>
+    /// Records the employee's separation (FR-1.5). Nothing is deleted: the record and all of its history
+    /// stay, and the employee drops out of lists filtered to active staff.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The employee is already inactive, or the date is before joining.</exception>
+    public void Deactivate(DateOnly separationDate)
+    {
+        if (!IsActive)
+        {
+            throw new InvalidOperationException("The employee is already inactive.");
+        }
+
+        if (separationDate < JoiningDate)
+        {
+            throw new InvalidOperationException("The separation date can't be before the joining date.");
+        }
+
+        IsActive = false;
+        SeparationDate = separationDate;
+    }
+
+    /// <summary>Undoes <see cref="Deactivate"/>, e.g. after a mistaken separation or a rehire.</summary>
+    /// <exception cref="InvalidOperationException">The employee is already active.</exception>
+    public void Reactivate()
+    {
+        if (IsActive)
+        {
+            throw new InvalidOperationException("The employee is already active.");
+        }
+
+        IsActive = true;
+        SeparationDate = null;
+    }
 }
