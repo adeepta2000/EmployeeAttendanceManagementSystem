@@ -34,6 +34,9 @@ coverage/
 *.log
 src/**/[Ll]ogs/
 
+# Emails written by the pickup-directory sender: they hold one-time reset links
+src/**/App_Data/
+
 # Local SQL Server / LocalDB files
 *.mdf
 *.ldf

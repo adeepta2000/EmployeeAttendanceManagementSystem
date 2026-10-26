@@ -52,7 +52,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddJwtAuthentication();
 builder.Services.AddPermissionAuthorization();
-builder.Services.AddLoginRateLimiting();
+builder.Services.AddAuthRateLimiting();
 builder.Services.AddSwaggerWithJwt();
 
 var app = builder.Build();

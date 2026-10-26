@@ -7,7 +7,12 @@ public interface IAccessTokenIssuer
 }
 
 /// <summary>What an access token says about its holder. Only public IDs go into a token.</summary>
-public sealed record AccessTokenSubject(Guid UserPublicId, Guid? EmployeePublicId, IReadOnlyCollection<string> Permissions);
+/// <param name="MustChangePassword">Restricts the token to the change-password endpoint (screen 4).</param>
+public sealed record AccessTokenSubject(
+    Guid UserPublicId,
+    Guid? EmployeePublicId,
+    IReadOnlyCollection<string> Permissions,
+    bool MustChangePassword = false);
 
 public sealed record AccessToken(string Token, DateTime ExpiresUtc)
 {
@@ -27,4 +32,19 @@ public interface IRefreshTokenGenerator
 public sealed record GeneratedRefreshToken(string Token, string Hash)
 {
     public override string ToString() => nameof(GeneratedRefreshToken);
+}
+
+/// <summary>Creates the one-time tokens of password-reset links and hashes them for storage.</summary>
+public interface IPasswordResetTokenGenerator
+{
+    /// <summary>A new random token and its hash. Email the token and store only the hash.</summary>
+    GeneratedResetToken Generate();
+
+    /// <summary>The stored form of <paramref name="token"/>, for looking a presented token up.</summary>
+    string Hash(string token);
+}
+
+public sealed record GeneratedResetToken(string Token, string Hash)
+{
+    public override string ToString() => nameof(GeneratedResetToken);
 }

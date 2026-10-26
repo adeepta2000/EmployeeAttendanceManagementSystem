@@ -67,8 +67,21 @@ public sealed class User : BaseEntity, IHasPublicId
     /// <summary>Clears the failure count and any expired lockout, and records the sign-in time.</summary>
     public void RegisterSuccessfulLogin(DateTime nowUtc)
     {
+        ClearLockout();
+        LastLoginUtc = nowUtc;
+    }
+
+    /// <summary>Replaces the password with a new hash. The account no longer has to change it (screen 4).</summary>
+    public void SetPassword(string passwordHash)
+    {
+        PasswordHash = passwordHash;
+        MustChangePassword = false;
+    }
+
+    /// <summary>Ends any lockout and resets the failure count.</summary>
+    public void ClearLockout()
+    {
         FailedLoginCount = 0;
         LockoutEndUtc = null;
-        LastLoginUtc = nowUtc;
     }
 }

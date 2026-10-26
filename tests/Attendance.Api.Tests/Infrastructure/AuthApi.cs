@@ -23,6 +23,23 @@ internal static class AuthApi
     public static Task<HttpResponseMessage> LogoutAsync(this HttpClient client, string refreshToken) =>
         client.PostAsJsonAsync("/api/auth/logout", new { refreshToken }, Ct);
 
+    public static Task<HttpResponseMessage> ChangePasswordAsync(
+        this HttpClient client, string accessToken, string currentPassword, string newPassword)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/change-password")
+        {
+            Content = JsonContent.Create(new { currentPassword, newPassword }),
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        return client.SendAsync(request, Ct);
+    }
+
+    public static Task<HttpResponseMessage> ForgotPasswordAsync(this HttpClient client, string email) =>
+        client.PostAsJsonAsync("/api/auth/forgot-password", new { email }, Ct);
+
+    public static Task<HttpResponseMessage> ResetPasswordAsync(this HttpClient client, string token, string newPassword) =>
+        client.PostAsJsonAsync("/api/auth/reset-password", new { token, newPassword }, Ct);
+
     public static async Task<AuthTokens> SignInAsync(this HttpClient client, TestUser user) =>
         await (await client.LoginAsync(user.Email)).ReadTokensAsync();
 

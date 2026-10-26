@@ -2,6 +2,7 @@ using System.Reflection;
 using Attendance.Application.Common.Messaging;
 using Attendance.Application.Common.Security;
 using Attendance.Application.Identity;
+using Attendance.Application.Identity.ForgotPassword;
 using Attendance.Application.Organization.Departments;
 using Attendance.Application.Organization.Employees;
 using FluentValidation;
@@ -24,6 +25,8 @@ public static class DependencyInjection
         services.AddHandlers(assembly, typeof(ICommandHandler<,>), typeof(ValidatingCommandHandler<,>));
         services.AddHandlers(assembly, typeof(IQueryHandler<,>), typeof(ValidatingQueryHandler<,>));
         services.AddScoped<AuthSessionService>();
+        services.AddScoped<PasswordService>();
+        services.AddScoped<PasswordResetLinkIssuer>();
         services.AddScoped<EmployeeScopeResolver>();
         services.AddScoped<DepartmentReferenceResolver>();
         services.AddScoped<EmployeeAssignmentResolver>();

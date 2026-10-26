@@ -12,6 +12,8 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.13" />
+    <!-- BackgroundService and IHostEnvironment for Infrastructure; the health checks already depend on it. -->
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.13" />
   </ItemGroup>
   <ItemGroup Label="Identity and auth">
     <!-- ASP.NET Identity's PasswordHasher<TUser> (PBKDF2), without the rest of Identity. -->

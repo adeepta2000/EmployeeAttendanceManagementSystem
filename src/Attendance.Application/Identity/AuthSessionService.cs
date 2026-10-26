@@ -34,7 +34,7 @@ internal sealed class AuthSessionService(
     {
         var permissions = await users.GetPermissionCodesAsync(user.Id, cancellationToken);
         var accessToken = accessTokenIssuer.Issue(
-            new AccessTokenSubject(user.PublicId, user.Employee?.PublicId, permissions), nowUtc);
+            new AccessTokenSubject(user.PublicId, user.Employee?.PublicId, permissions, user.MustChangePassword), nowUtc);
 
         var refreshToken = refreshTokenGenerator.Generate();
         var stored = new RefreshToken
@@ -81,11 +81,20 @@ internal sealed class AuthSessionService(
 /// <param name="RefreshTokenHash">The stored hash of the new refresh token, for linking its predecessor to it.</param>
 internal sealed record IssuedSession(AuthTokens Tokens, string RefreshTokenHash);
 
-internal static class AuthInputLimits
+public static class AuthInputLimits
 {
     /// <summary>Caps the work a caller can force on the password hasher.</summary>
     public const int PasswordMaxLength = 256;
 
+    /// <summary>
+    /// The shortest new password accepted. Length is the whole policy: no composition rules, which
+    /// push people towards predictable patterns (NIST SP 800-63B).
+    /// </summary>
+    public const int NewPasswordMinLength = 12;
+
     /// <summary>Issued refresh tokens are 86 characters; anything much longer isn't one of ours.</summary>
     public const int RefreshTokenMaxLength = 256;
+
+    /// <summary>Issued reset tokens are 43 characters; anything much longer isn't one of ours.</summary>
+    public const int PasswordResetTokenMaxLength = 256;
 }

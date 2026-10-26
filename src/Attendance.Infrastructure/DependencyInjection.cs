@@ -3,6 +3,8 @@ using Attendance.Application.Common.Interfaces;
 using Attendance.Application.Identity.Abstractions;
 using Attendance.Application.Organization.Abstractions;
 using Attendance.Domain.Organization;
+using Attendance.Infrastructure.Background;
+using Attendance.Infrastructure.Email;
 using Attendance.Infrastructure.Files;
 using Attendance.Infrastructure.Identity;
 using Attendance.Infrastructure.Persistence;
@@ -50,7 +52,18 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
         services.AddScoped<IUserContextService, UserContextService>();
+
+        services.AddOptions<EmailOptions>()
+            .Bind(configuration.GetSection(EmailOptions.SectionName))
+            .Validate(o => o.IsValid, EmailOptions.ValidationMessage)
+            .ValidateOnStart();
+        services.AddSingleton<IEmailSender, PickupDirectoryEmailSender>();
+
+        services.AddSingleton<BackgroundWorkQueue>();
+        services.AddSingleton<IBackgroundWorkQueue>(provider => provider.GetRequiredService<BackgroundWorkQueue>());
+        services.AddHostedService<BackgroundWorkService>();
 
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IMasterDataRepository<Designation>, MasterDataRepository<Designation>>();
@@ -61,6 +74,7 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
         services.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
+        services.AddSingleton<IPasswordResetTokenGenerator, PasswordResetTokenGenerator>();
 
         services.AddHealthChecks().AddDbContextCheck<AttendanceDbContext>("database", tags: [ReadinessTag]);
 

@@ -1,4 +1,5 @@
 using System.Text;
+using Attendance.Api.Authorization;
 using Attendance.Application.Identity;
 using Attendance.Domain.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,19 +60,27 @@ internal static class AuthSetup
     /// One policy per permission code (FR-8.2), named by the code, so endpoints use
     /// <c>[Authorize(Policy = Permissions.Leave.Approve)]</c>. Endpoints without an attribute still need
     /// a signed-in user (the fallback policy); public ones opt out with <c>[AllowAnonymous]</c>.
+    /// Every policy also holds an account that must change its password to the change-password
+    /// endpoint (<see cref="PasswordChangeRequirement"/>).
     /// </summary>
     public static IServiceCollection AddPermissionAuthorization(this IServiceCollection services)
     {
+        var passwordChanged = new PasswordChangeRequirement();
+        var signedIn = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().AddRequirements(passwordChanged).Build();
+
         var builder = services.AddAuthorizationBuilder()
-            .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+            .SetDefaultPolicy(signedIn)
+            .SetFallbackPolicy(signedIn);
 
         foreach (var permission in Permissions.All)
         {
             builder.AddPolicy(permission.Code, policy => policy
                 .RequireAuthenticatedUser()
-                .RequireClaim(AuthClaimTypes.Permission, permission.Code));
+                .RequireClaim(AuthClaimTypes.Permission, permission.Code)
+                .AddRequirements(passwordChanged));
         }
 
+        services.AddSingleton<IAuthorizationMiddlewareResultHandler, PasswordChangeResultHandler>();
         return services;
     }
 }

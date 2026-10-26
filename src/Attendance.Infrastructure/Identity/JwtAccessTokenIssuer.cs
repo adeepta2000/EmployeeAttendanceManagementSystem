@@ -33,6 +33,10 @@ internal sealed class JwtAccessTokenIssuer(IOptions<JwtOptions> jwtOptions, IOpt
         }
 
         claims.AddRange(subject.Permissions.Select(code => new Claim(AuthClaimTypes.Permission, code)));
+        if (subject.MustChangePassword)
+        {
+            claims.Add(new Claim(AuthClaimTypes.PasswordChangeRequired, "true"));
+        }
 
         var token = _handler.CreateToken(new SecurityTokenDescriptor
         {

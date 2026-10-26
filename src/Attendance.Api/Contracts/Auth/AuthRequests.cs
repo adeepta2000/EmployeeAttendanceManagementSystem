@@ -18,3 +18,19 @@ public sealed record LogoutRequest(string RefreshToken)
 {
     public override string ToString() => nameof(LogoutRequest);
 }
+
+public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword)
+{
+    public override string ToString() => nameof(ChangePasswordRequest);
+}
+
+public sealed record ForgotPasswordRequest(string Email)
+{
+    public override string ToString() => nameof(ForgotPasswordRequest);
+}
+
+/// <param name="Token">The token from the reset link's fragment (<c>/reset-password#token=…</c>).</param>
+public sealed record ResetPasswordRequest(string Token, string NewPassword)
+{
+    public override string ToString() => nameof(ResetPasswordRequest);
+}

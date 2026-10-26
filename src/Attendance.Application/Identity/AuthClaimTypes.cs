@@ -14,4 +14,10 @@ public static class AuthClaimTypes
 
     /// <summary>One claim per permission code (FR-8.2). Roles are never put in the token.</summary>
     public const string Permission = "permission";
+
+    /// <summary>
+    /// Present (value "true") while the account must change its password (screen 4). Such a token can
+    /// call nothing but the change-password endpoint.
+    /// </summary>
+    public const string PasswordChangeRequired = "pwd_change";
 }

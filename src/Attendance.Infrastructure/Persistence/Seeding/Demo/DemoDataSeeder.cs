@@ -1,3 +1,4 @@
+using Attendance.Application.Identity;
 using Attendance.Application.Identity.Abstractions;
 using Attendance.Domain.Identity;
 using Attendance.Domain.Organization;
@@ -21,7 +22,8 @@ public sealed class DemoDataOptions
     /// </summary>
     public string? Password { get; set; }
 
-    internal const int PasswordMinLength = 12;
+    // The same floor as any new password: demo accounts sign in with it.
+    internal const int PasswordMinLength = AuthInputLimits.NewPasswordMinLength;
 
     internal bool IsValid => !Enabled || Password is { Length: >= PasswordMinLength };
 

@@ -15,6 +15,10 @@ export function formatDate(value: string | null | undefined): string {
   return isValid(date) ? format(date, "dd MMM yyyy") : value
 }
 
+/**
+ * Today's business date as `yyyy-MM-dd`, for form defaults only. The server decides every date that
+ * matters; the client clock is never trusted (CLAUDE.md, "Time").
+ */
 export function todayInBusinessZone(): string {
   return formatInTimeZone(new Date(), BUSINESS_TIME_ZONE, "yyyy-MM-dd")
 }

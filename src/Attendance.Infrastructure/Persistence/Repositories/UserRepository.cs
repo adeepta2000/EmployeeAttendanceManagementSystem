@@ -14,6 +14,11 @@ internal sealed class UserRepository(AttendanceDbContext db) : IUserRepository
             .SingleOrDefaultAsync(u => u.Email == normalized, cancellationToken);
     }
 
+    public Task<User?> FindByIdAsync(long userId, CancellationToken cancellationToken) =>
+        db.Users
+            .Include(u => u.Employee)
+            .SingleOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
     public Task<User?> FindByEmployeeIdAsync(long employeeId, CancellationToken cancellationToken) =>
         db.Users.SingleOrDefaultAsync(u => u.EmployeeId == employeeId, cancellationToken);
 

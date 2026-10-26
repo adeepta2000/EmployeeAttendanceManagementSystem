@@ -3,14 +3,14 @@ import { NextResponse, type NextRequest } from "next/server"
 import { clientInfo } from "@/lib/bff/client-info"
 import { isSameOriginRequest } from "@/lib/bff/csrf"
 import { BffErrors } from "@/lib/bff/problem"
-import { isMissingEndpoint, notAvailableYet, relay } from "@/lib/bff/relay"
+import { relay } from "@/lib/bff/relay"
 import { callUpstream, newCorrelationId, UpstreamUnavailableError } from "@/lib/bff/upstream"
 import { parseBody } from "@/lib/bff/validate"
 import { forgotPasswordSchema } from "@/lib/schemas/auth"
 
 /**
- * Asks the API to email a reset link (screen 2). Expected contract: `POST /api/auth/forgot-password
- * { email }` answers 202 whether or not the address has an account, so the answer reveals nothing (§2.6).
+ * Asks the API to email a reset link (screen 2). The API answers 202 whether or not the address has an
+ * account, before doing any work, so neither the answer nor its timing reveals anything (§2.6).
  */
 export async function POST(request: NextRequest) {
   if (!isSameOriginRequest(request)) return BffErrors.forbiddenOrigin()
@@ -32,7 +32,6 @@ export async function POST(request: NextRequest) {
     throw error
   }
 
-  if (isMissingEndpoint(upstream.status, { anonymous: true })) return notAvailableYet()
   if (!upstream.ok) return relay(upstream)
 
   await upstream.body?.cancel()

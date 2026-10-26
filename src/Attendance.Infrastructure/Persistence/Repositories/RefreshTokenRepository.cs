@@ -17,5 +17,10 @@ internal sealed class RefreshTokenRepository(AttendanceDbContext db) : IRefreshT
             .Where(t => t.FamilyId == familyId && t.RevokedUtc == null)
             .ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<RefreshToken>> GetUnrevokedForUserAsync(long userId, CancellationToken cancellationToken) =>
+        await db.RefreshTokens
+            .Where(t => t.UserId == userId && t.RevokedUtc == null)
+            .ToListAsync(cancellationToken);
+
     public void Add(RefreshToken token) => db.RefreshTokens.Add(token);
 }

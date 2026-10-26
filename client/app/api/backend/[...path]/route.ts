@@ -19,8 +19,8 @@ async function handle(request: NextRequest, context: Context): Promise<Response>
 
   if (request.method !== "GET" && !isSameOriginRequest(request)) return BffErrors.forbiddenOrigin()
 
-  // Screen 4: until a forced password change is done, the account can do nothing else. The API doesn't
- 
+  // Screen 4: until a forced password change is done, the account can do nothing else. The API refuses
+  // such calls too (the pwd_change claim); answering here just saves the round trip.
   if (request.cookies.has(CookieNames.mustChangePassword)) return BffErrors.passwordChangeRequired()
 
   let query = ""

@@ -19,6 +19,8 @@ public class AttendanceDbContext(DbContextOptions<AttendanceDbContext> options) 
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+
     // Organization
     public DbSet<Department> Departments => Set<Department>();
 

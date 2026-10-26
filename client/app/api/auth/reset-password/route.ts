@@ -3,15 +3,15 @@ import { NextResponse, type NextRequest } from "next/server"
 import { clientInfo } from "@/lib/bff/client-info"
 import { isSameOriginRequest } from "@/lib/bff/csrf"
 import { BffErrors } from "@/lib/bff/problem"
-import { isMissingEndpoint, notAvailableYet, relay } from "@/lib/bff/relay"
+import { relay } from "@/lib/bff/relay"
 import { callUpstream, newCorrelationId, UpstreamUnavailableError } from "@/lib/bff/upstream"
 import { parseBody } from "@/lib/bff/validate"
 import { resetPasswordSchema } from "@/lib/schemas/auth"
 
 /**
- * Sets a new password with the one-time token from a reset link (screen 3). Expected contract:
- * `POST /api/auth/reset-password { token, newPassword }` answers 204, or 400 when the token is unknown,
- * used or expired. The user signs in afresh afterwards; no session is started here.
+ * Sets a new password with the one-time token from a reset link (screen 3). The API answers 204, or 400
+ * `auth.invalid_reset_token` when the link is unknown, used, replaced or expired. Every session of the
+ * account ends; the user signs in afresh afterwards, so no session is started here.
  */
 export async function POST(request: NextRequest) {
   if (!isSameOriginRequest(request)) return BffErrors.forbiddenOrigin()
@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
     throw error
   }
 
-  if (isMissingEndpoint(upstream.status, { anonymous: true })) return notAvailableYet()
   if (!upstream.ok) return relay(upstream)
 
   await upstream.body?.cancel()

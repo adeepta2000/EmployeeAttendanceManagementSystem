@@ -10,6 +10,7 @@ export default getRequestConfig(async () => {
   return {
     locale,
     messages: (await import(`../messages/${locale}.json`)).default,
+    // Business dates are Asia/Dhaka whatever the browser's zone (CLAUDE.md, "Time").
     timeZone: "Asia/Dhaka",
   }
 })

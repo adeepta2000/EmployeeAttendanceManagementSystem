@@ -171,6 +171,9 @@ public sealed class RefreshTokenCommandHandlerTests : IDisposable
         public Task<IReadOnlyList<RefreshToken>> GetUnrevokedInFamilyAsync(Guid familyId, CancellationToken cancellationToken) =>
             inner.GetUnrevokedInFamilyAsync(familyId, cancellationToken);
 
+        public Task<IReadOnlyList<RefreshToken>> GetUnrevokedForUserAsync(long userId, CancellationToken cancellationToken) =>
+            inner.GetUnrevokedForUserAsync(userId, cancellationToken);
+
         public void Add(RefreshToken token) => inner.Add(token);
     }
 }

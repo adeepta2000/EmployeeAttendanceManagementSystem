@@ -1,3 +1,4 @@
+using Attendance.Application.Common.Interfaces;
 using Attendance.Application.Identity.Abstractions;
 using Attendance.Domain.Identity;
 using Attendance.Domain.Organization;
@@ -5,8 +6,10 @@ using Attendance.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Attendance.Api.Tests.Infrastructure;
 
@@ -18,12 +21,18 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
 {
     public const string Password = "Nordwin-Test-Pa55word";
 
+    /// <summary>The client address that links in emails point at.</summary>
+    public const string ClientBaseUrl = "https://attendance.nordwin.example";
+
     private static int _lastClientIp;
     private static int _lastCode;
 
     private readonly TestSqlServer _sqlServer = new();
 
     private static CancellationToken Ct => TestContext.Current.CancellationToken;
+
+    /// <summary>Every email the app sent, instead of delivering it.</summary>
+    public CapturingEmailSender Emails { get; } = new();
 
     public async ValueTask InitializeAsync()
     {
@@ -42,6 +51,7 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:Attendance", _sqlServer.ConnectionString);
         builder.UseSetting("Jwt:SigningKey", "integration-test-signing-key-of-at-least-32-chars");
+        builder.UseSetting("Auth:ClientBaseUrl", ClientBaseUrl);
         builder.UseSetting("Serilog:MinimumLevel:Default", "Error");
         ConfigureSettings(builder);
 
@@ -49,6 +59,8 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
         {
             services.AddSingleton<IStartupFilter, TestClientIpStartupFilter>();
             services.AddControllers().AddApplicationPart(typeof(ProbeController).Assembly);
+            services.RemoveAll<IEmailSender>();
+            services.AddSingleton<IEmailSender>(Emails);
         });
     }
 
@@ -77,10 +89,14 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
         $"{prefix}-{Interlocked.Increment(ref _lastCode)}-{Guid.NewGuid():N}"[..20].ToUpperInvariant();
 
     /// <summary>
-    /// Adds an active user with <see cref="Password"/>, optionally in one of the seeded system roles and
-    /// linked to an employee.
+    /// Adds a user with <see cref="Password"/>, optionally in one of the seeded system roles and linked to
+    /// an employee.
     /// </summary>
-    public async Task<TestUser> CreateUserAsync(string? role = null, TestEmployee? employee = null)
+    public async Task<TestUser> CreateUserAsync(
+        string? role = null,
+        TestEmployee? employee = null,
+        bool mustChangePassword = false,
+        bool isActive = true)
     {
         await using var scope = Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
@@ -91,6 +107,8 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
             Email = $"user.{Guid.NewGuid():N}@nordwin.example",
             PasswordHash = passwordHasher.Hash(Password),
             EmployeeId = employee?.Id,
+            MustChangePassword = mustChangePassword,
+            IsActive = isActive,
         };
         if (role is not null)
         {
@@ -178,6 +196,23 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
         var client = CreateApiClient();
         var tokens = await client.SignInAsync(user);
         return new ApiSession(client, tokens.AccessToken, user);
+    }
+
+    /// <summary>
+    /// Waits until the background queue has run everything queued so far, e.g. the email of a reset
+    /// request. The queue runs one item at a time, so once a marker queued now has run, so has the rest.
+    /// </summary>
+    public async Task DrainBackgroundWorkAsync()
+    {
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Services.GetRequiredService<IBackgroundWorkQueue>()
+            .TryEnqueue("test-drain", (_, _) =>
+            {
+                done.SetResult();
+                return Task.CompletedTask;
+            })
+            .Should().BeTrue();
+        await done.Task.WaitAsync(TimeSpan.FromSeconds(30), Ct);
     }
 
     /// <summary>Reads the database directly, in its own scope, to check what the API stored.</summary>
