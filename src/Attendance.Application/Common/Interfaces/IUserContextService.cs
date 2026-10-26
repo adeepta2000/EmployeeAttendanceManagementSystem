@@ -23,7 +23,6 @@ public interface IUserContextService
 
 /// <summary>
 /// The signed-in caller. The internal IDs are for joins and filters only and must never reach a
-/// response (CLAUDE.md data conventions).
 /// </summary>
 /// <param name="EmployeeId">Null for an account with no employee record, such as an IT admin.</param>
 /// <param name="Permissions">The permission codes from the caller's access token.</param>

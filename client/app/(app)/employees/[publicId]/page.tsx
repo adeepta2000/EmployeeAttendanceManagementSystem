@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const publicId = z.guid()
 
-/** Screen 27. Records are addressed by PublicId only (CLAUDE.md, "Public keys"). */
+/** Screen 27. Records are addressed by PublicId only ("Public keys"). */
 export default async function EmployeePage({ params }: PageProps<"/employees/[publicId]">) {
   const { publicId: id } = await params
   if (!publicId.safeParse(id).success) notFound()

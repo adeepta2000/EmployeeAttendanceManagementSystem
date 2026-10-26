@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Domain depends on nothing: no project or package references (CLAUDE.md dependency rule). -->
+  <!-- Domain depends on nothing: no project or package references. -->
 
 </Project>

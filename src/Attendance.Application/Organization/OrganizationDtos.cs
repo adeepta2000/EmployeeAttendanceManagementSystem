@@ -2,7 +2,7 @@ using Attendance.Domain.Organization;
 
 namespace Attendance.Application.Organization;
 
-// Response DTOs (CLAUDE.md: never return an EF entity). Records are identified by PublicId only; internal
+// Response DTOs. Records are identified by PublicId only; internal
 // IDs never leave the server. Those carrying personal data override ToString to keep it out of logs.
 
 /// <summary>A department, designation or work location as referenced from another record.</summary>

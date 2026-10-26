@@ -9,7 +9,7 @@ using Assembly = System.Reflection.Assembly;
 namespace Attendance.Domain.Tests;
 
 /// <summary>
-/// Enforces the dependency rule (spec §2.2, CLAUDE.md). Never weaken these rules to get a build green.
+/// Enforces the dependency rule. Never weaken these rules to get a build green.
 /// </summary>
 public sealed class ArchitectureTests
 {
@@ -46,7 +46,7 @@ public sealed class ArchitectureTests
             "Domain may use only the base class library: no EF Core, no Shared, no third-party packages");
     }
 
-    // Shared ("cross-cutting contracts, result types") is allowed here: CLAUDE.md lets Application reference it.
+    // Shared ("cross-cutting contracts, result types") is allowed here: Application can reference it.
     [Fact]
     public void Application_depends_only_on_Domain_and_Shared() =>
         Types().That().Are(ApplicationLayer)

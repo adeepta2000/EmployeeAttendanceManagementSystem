@@ -24,7 +24,7 @@ const flights: Map<string, Flight> = ((globalThis as Record<symbol, unknown>)[Sy
   new Map<string, Flight>()) as Map<string, Flight>
 
 /**
- * Exchanges a refresh token for a new pair, at most once per token (spec §2.5, CLAUDE.md "Reuse detection").
+ * Exchanges a refresh token for a new pair, at most once per token ("Reuse detection").
  *
  * The API revokes the whole token family when a revoked refresh token is presented again. A page that
  * fires several requests just as the access token expires would otherwise present the same refresh token

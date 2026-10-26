@@ -4,7 +4,6 @@ namespace Attendance.Infrastructure.Persistence.Seeding.Demo;
 
 /// <summary>
 /// Generates the demo dataset for the fictional Nordwin Textiles Ltd. Everything in it is invented
-/// (CLAUDE.md data conventions), and it is deterministic: the same date and seed always give the same
 /// company, so every developer and every demo sees the same people.
 /// </summary>
 /// <remarks>

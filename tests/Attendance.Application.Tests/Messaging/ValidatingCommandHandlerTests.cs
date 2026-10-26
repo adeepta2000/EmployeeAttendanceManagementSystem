@@ -46,7 +46,7 @@ public sealed class ValidatingCommandHandlerTests
                 && baseType.GetGenericTypeDefinition() == typeof(AbstractValidator<>))
             .Select(t => t.BaseType!.GenericTypeArguments[0]);
 
-        commands.Should().NotBeEmpty().And.BeSubsetOf(validated, "CLAUDE.md: FluentValidation for every command");
+        commands.Should().NotBeEmpty().And.BeSubsetOf(validated, "FluentValidation for every command");
     }
 
     [Fact]

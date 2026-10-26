@@ -135,7 +135,7 @@ export function MasterDataToolbar({
 }
 
 /**
- * Retire or restore a master record. Retiring never deletes (CLAUDE.md, "No hard deletes"); the API
+ * Retire or restore a master record. Retiring never deletes ("No hard deletes"); the API
  * refuses it while the record is still in use and says what to move first, which this dialog shows.
  */
 export function SetActiveDialog({

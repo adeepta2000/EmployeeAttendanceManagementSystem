@@ -7,7 +7,7 @@ using Testcontainers.MsSql;
 namespace Attendance.Api.Tests.Infrastructure;
 
 /// <summary>
-/// A real SQL Server for the integration tests (CLAUDE.md): a Testcontainers container by default.
+/// A real SQL Server for the integration tests: a Testcontainers container by default.
 /// Where Docker isn't available, set <c>ATTENDANCE_TEST_SQLSERVER</c> to a connection string for an
 /// existing server, without a database name. Each run then creates its own database there and drops
 /// it at the end.

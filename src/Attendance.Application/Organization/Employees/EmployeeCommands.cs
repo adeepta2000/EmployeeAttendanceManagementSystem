@@ -5,8 +5,6 @@ using FluentValidation;
 
 namespace Attendance.Application.Organization.Employees;
 
-// The commands carry personal data, so each ToString is overridden to keep it out of logs (CLAUDE.md).
-
 /// <summary>
 /// Adds an employee (FR-1.2). No login account is created: an employee can exist without one (FR-1.3).
 /// The department, designation and work location must be active; the reporting manager, if given,
