@@ -1,7 +1,10 @@
+using System.Data.Common;
 using System.Net;
 using System.Net.Http.Json;
 using Attendance.Api.Tests.Infrastructure;
 using FluentAssertions;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -71,4 +74,29 @@ public sealed class PlatformTests(AttendanceApiFactory api)
         var correlationId = response.Headers.GetValues(CorrelationHeader).Single();
         correlationId.Should().MatchRegex("^[0-9a-f]{32}$");
     }
+
+    // A query cancelled because the client went away surfaces as a SqlException, which has no public
+    // constructor; any DbException takes the same path.
+    [Theory]
+    [InlineData(true, 499)]
+    [InlineData(false, 500)]
+    public async Task A_database_error_is_a_client_closed_request_only_if_the_client_went_away(bool aborted, int expectedStatus)
+    {
+        using var scope = api.Services.CreateScope();
+        var handler = scope.ServiceProvider.GetServices<IExceptionHandler>().Single();
+        using var abort = new CancellationTokenSource();
+        if (aborted)
+        {
+            await abort.CancelAsync();
+        }
+
+        var context = new DefaultHttpContext { RequestServices = scope.ServiceProvider, RequestAborted = abort.Token };
+
+        var handled = await handler.TryHandleAsync(context, new CancelledCommandException(), Ct);
+
+        handled.Should().BeTrue();
+        context.Response.StatusCode.Should().Be(expectedStatus);
+    }
+
+    private sealed class CancelledCommandException() : DbException("Operation cancelled by user.");
 }

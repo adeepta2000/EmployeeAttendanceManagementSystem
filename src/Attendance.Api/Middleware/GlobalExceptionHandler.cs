@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Text.Json;
 using Attendance.Application.Common.Exceptions;
 using FluentValidation;
@@ -21,7 +22,9 @@ internal sealed class GlobalExceptionHandler(
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        if (exception is OperationCanceledException && httpContext.RequestAborted.IsCancellationRequested)
+        // SqlClient reports a command cancelled by the request's token as a SqlException ("Operation
+        // cancelled by user"), not an OperationCanceledException: that is the client leaving too.
+        if (exception is OperationCanceledException or DbException && httpContext.RequestAborted.IsCancellationRequested)
         {
             httpContext.Response.StatusCode = ClientClosedRequest;
             return true;
