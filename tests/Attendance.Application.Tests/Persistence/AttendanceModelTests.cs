@@ -1,6 +1,7 @@
 using Attendance.Domain.Common;
 using Attendance.Domain.Identity;
 using Attendance.Domain.Organization;
+using Attendance.Domain.Scheduling;
 using Attendance.Infrastructure.Persistence;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,8 @@ public sealed class AttendanceModelTests
     [InlineData(typeof(Designation), nameof(Designation.Code))]
     [InlineData(typeof(WorkLocation), nameof(WorkLocation.Code))]
     [InlineData(typeof(Employee), nameof(Employee.EmployeeCode))]
+    [InlineData(typeof(Shift), nameof(Shift.Code))]
+    [InlineData(typeof(WeeklyOffPattern), nameof(WeeklyOffPattern.Name))]
     public void Business_keys_are_unique(Type entity, string property)
     {
         using var context = CreateContext();
@@ -68,6 +71,35 @@ public sealed class AttendanceModelTests
                 i => i.IsUnique && i.Properties.Count == 1 && i.Properties[0] == publicId,
                 $"{entityType.DisplayName()} is looked up by PublicId");
         }
+    }
+
+    [Fact]
+    public void A_roster_has_one_row_per_employee_and_date_and_the_spec_date_index()
+    {
+        using var context = CreateContext();
+        var indexes = context.Model.FindEntityType(typeof(EmployeeShiftRoster))!.GetIndexes().ToList();
+
+        indexes.Should().Contain(i => i.IsUnique && i.GetFilter() == null
+            && i.Properties.Select(p => p.Name).SequenceEqual(new[] { nameof(EmployeeShiftRoster.EmployeeId), nameof(EmployeeShiftRoster.RosterDate) }));
+        indexes.Should().Contain(i => i.GetDatabaseName() == "IX_Roster_Date");
+    }
+
+    [Fact]
+    public void A_weekly_off_day_is_unique_per_pattern_even_when_it_is_every_week()
+    {
+        using var context = CreateContext();
+
+        // No IS NOT NULL filter: a null WeekOfMonth ("every week") must be unique too.
+        context.Model.FindEntityType(typeof(WeeklyOffPatternDay))!.GetIndexes()
+            .Should().Contain(i => i.IsUnique && i.Properties.Count == 3 && i.GetFilter() == null);
+    }
+
+    [Fact]
+    public void Transactional_scheduling_tables_are_soft_deletable()
+    {
+        typeof(ISoftDeletable).IsAssignableFrom(typeof(EmployeeShiftRoster)).Should().BeTrue();
+        typeof(ISoftDeletable).IsAssignableFrom(typeof(Holiday)).Should().BeTrue();
+        typeof(ISoftDeletable).IsAssignableFrom(typeof(HolidayLocation)).Should().BeTrue();
     }
 
     [Fact]

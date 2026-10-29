@@ -503,6 +503,9 @@ namespace Attendance.Infrastructure.Persistence.Migrations
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
+                    b.Property<long?>("DefaultShiftId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("DepartmentId")
                         .HasColumnType("bigint");
 
@@ -564,10 +567,15 @@ namespace Attendance.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<long?>("WeeklyOffPatternId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("WorkLocationId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DefaultShiftId");
 
                     b.HasIndex("DesignationId");
 
@@ -579,6 +587,8 @@ namespace Attendance.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ReportingManagerId")
                         .HasDatabaseName("IX_Employees_ReportingManagerId");
+
+                    b.HasIndex("WeeklyOffPatternId");
 
                     b.HasIndex("WorkLocationId");
 
@@ -651,6 +661,334 @@ namespace Attendance.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkLocations", (string)null);
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.EmployeeShiftRoster", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsWeeklyOffOverride")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PublicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateOnly>("RosterDate")
+                        .HasColumnType("date");
+
+                    b.Property<long>("ShiftId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.HasIndex("RosterDate")
+                        .HasDatabaseName("IX_Roster_Date");
+
+                    b.HasIndex("ShiftId");
+
+                    b.HasIndex("EmployeeId", "RosterDate")
+                        .IsUnique();
+
+                    b.ToTable("EmployeeShiftRosters", (string)null);
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.Holiday", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateOnly>("HolidayDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOptional")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("PublicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.HasIndex("HolidayDate", "Name")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("Holidays", (string)null);
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.HolidayLocation", b =>
+                {
+                    b.Property<long>("HolidayId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("WorkLocationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("HolidayId", "WorkLocationId");
+
+                    b.HasIndex("WorkLocationId");
+
+                    b.ToTable("HolidayLocations", (string)null);
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.Shift", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BreakMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("CrossesMidnight")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time(0)");
+
+                    b.Property<int>("FullDayMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GraceInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GraceOutMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HalfDayThresholdMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("PublicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("PunchWindowAfterMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PunchWindowBeforeMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time(0)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("Shifts", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Shifts_CrossesMidnight", "[CrossesMidnight] = CASE WHEN [EndTime] < [StartTime] THEN 1 ELSE 0 END");
+
+                            t.HasCheckConstraint("CK_Shifts_StartTime_EndTime", "[StartTime] <> [EndTime]");
+                        });
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.WeeklyOffPattern", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("PublicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("WeeklyOffPatterns", (string)null);
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.WeeklyOffPatternDay", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<byte>("DayOfWeek")
+                        .HasColumnType("tinyint");
+
+                    b.Property<long>("PatternId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<byte?>("WeekOfMonth")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatternId", "DayOfWeek", "WeekOfMonth")
+                        .IsUnique();
+
+                    b.ToTable("WeeklyOffPatternDays", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_WeeklyOffPatternDays_DayOfWeek", "[DayOfWeek] BETWEEN 0 AND 6");
+
+                            t.HasCheckConstraint("CK_WeeklyOffPatternDays_WeekOfMonth", "[WeekOfMonth] BETWEEN 1 AND 5");
+                        });
                 });
 
             modelBuilder.Entity("Attendance.Domain.Identity.PasswordResetToken", b =>
@@ -742,6 +1080,11 @@ namespace Attendance.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Attendance.Domain.Organization.Employee", b =>
                 {
+                    b.HasOne("Attendance.Domain.Scheduling.Shift", "DefaultShift")
+                        .WithMany()
+                        .HasForeignKey("DefaultShiftId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Attendance.Domain.Organization.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
@@ -759,11 +1102,18 @@ namespace Attendance.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ReportingManagerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Attendance.Domain.Scheduling.WeeklyOffPattern", "WeeklyOffPattern")
+                        .WithMany()
+                        .HasForeignKey("WeeklyOffPatternId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Attendance.Domain.Organization.WorkLocation", "WorkLocation")
                         .WithMany()
                         .HasForeignKey("WorkLocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("DefaultShift");
 
                     b.Navigation("Department");
 
@@ -771,7 +1121,56 @@ namespace Attendance.Infrastructure.Persistence.Migrations
 
                     b.Navigation("ReportingManager");
 
+                    b.Navigation("WeeklyOffPattern");
+
                     b.Navigation("WorkLocation");
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.EmployeeShiftRoster", b =>
+                {
+                    b.HasOne("Attendance.Domain.Organization.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Attendance.Domain.Scheduling.Shift", "Shift")
+                        .WithMany()
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Shift");
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.HolidayLocation", b =>
+                {
+                    b.HasOne("Attendance.Domain.Scheduling.Holiday", "Holiday")
+                        .WithMany("Locations")
+                        .HasForeignKey("HolidayId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Attendance.Domain.Organization.WorkLocation", "WorkLocation")
+                        .WithMany()
+                        .HasForeignKey("WorkLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Holiday");
+
+                    b.Navigation("WorkLocation");
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.WeeklyOffPatternDay", b =>
+                {
+                    b.HasOne("Attendance.Domain.Scheduling.WeeklyOffPattern", null)
+                        .WithMany("Days")
+                        .HasForeignKey("PatternId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Attendance.Domain.Identity.Role", b =>
@@ -782,6 +1181,16 @@ namespace Attendance.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Attendance.Domain.Identity.User", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.Holiday", b =>
+                {
+                    b.Navigation("Locations");
+                });
+
+            modelBuilder.Entity("Attendance.Domain.Scheduling.WeeklyOffPattern", b =>
+                {
+                    b.Navigation("Days");
                 });
 #pragma warning restore 612, 618
         }

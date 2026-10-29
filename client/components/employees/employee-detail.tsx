@@ -8,6 +8,7 @@ import { useState } from "react"
 
 import { FormAlert } from "@/components/forms/form-alert"
 import { PageHeader } from "@/components/page-header"
+import { EmployeeShiftTab } from "@/components/scheduling/employee-shift-tab"
 import { useSession } from "@/components/shell/session-context"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -80,6 +81,7 @@ export function EmployeeDetail({ id }: { id: string }) {
       onTabChange={setTab}
       profile={<ProfileFacts employee={employee} />}
       employment={<EmploymentFacts employee={employee} />}
+      shift={<EmployeeShiftTab employee={employee} />}
     />
   )
 }

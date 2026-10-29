@@ -34,7 +34,25 @@
     "confirmationBeforeJoining": "The confirmation date can't be before the joining date.",
     "passwordLength": "Use at least {min} characters.",
     "passwordMismatch": "The passwords don't match. Type the new password again.",
-    "passwordSame": "Choose a password that is different from your current one."
+    "passwordSame": "Choose a password that is different from your current one.",
+    "time": "Enter a time like 09:00.",
+    "minutesAtLeast": "Enter whole minutes, {min} or more.",
+    "minutesBetween": "Enter whole minutes from {min} to {max}.",
+    "shiftEndsAtStart": "A shift can't end at the time it starts. For a night shift, enter an end time earlier in the day, e.g. 22:00 to 06:00.",
+    "breakTooLong": "The break must be shorter than the shift.",
+    "fullDayTooLong": "A full day can't need more than the shift has after its break: {hours}.",
+    "halfDayTooLong": "The half-day threshold can't be more than a full day.",
+    "punchWindowTooLong": "Before + the shift + after can't add up to more than 24 hours, or one punch could count for two days. Shorten the window.",
+    "patternEmpty": "Choose at least one day off.",
+    "patternDuplicate": "A day is listed more than once.",
+    "patternEveryWeekAndSome": "A day that is off every week can't also be off in particular weeks.",
+    "patternEveryDay": "Leave at least one working day in the week.",
+    "scheduleDate": "Enter a date from 2000 to 2099.",
+    "tooManyLocations": "Choose {max} locations or fewer.",
+    "rangeOrder": "The end date can't be before the start date.",
+    "rangeTooLong": "Choose at most {max} days, both dates included.",
+    "selectEmployees": "Select at least one employee.",
+    "tooManyEmployees": "Select {max} employees or fewer."
   },
   "auth": {
     "login": {
@@ -117,7 +135,7 @@
     },
     "desktopOnly": {
       "title": "Open this on a larger screen",
-      "body": "Setup and master-data screens need a desktop or laptop. On a phone, use the punch, attendance and leave screens instead."
+      "body": "Setup and master-data screens need a window at least 900 pixels wide: a desktop or laptop. Widen the window, or on a phone use the punch, attendance and leave screens instead."
     }
   },
   "nav": {
@@ -282,10 +300,6 @@
         "yes": "Can sign in",
         "no": "No login (punches on a device only)"
       },
-      "shift": {
-        "title": "No shift assigned yet",
-        "body": "The default shift, roster and weekly-off pattern are set here once the Shift module is switched on."
-      },
       "leave": {
         "title": "No leave balances yet",
         "body": "Balances by leave type appear here once leave types are set up in the Leave module."
@@ -428,5 +442,427 @@
     "title": "There's nothing at this address",
     "body": "The link may be mistyped, or the screen may not exist yet.",
     "home": "Go to the start page"
+  },
+  "scheduling": {
+    "days": {
+      "long": {
+        "Sunday": "Sunday",
+        "Monday": "Monday",
+        "Tuesday": "Tuesday",
+        "Wednesday": "Wednesday",
+        "Thursday": "Thursday",
+        "Friday": "Friday",
+        "Saturday": "Saturday"
+      },
+      "short": {
+        "Sunday": "Sun",
+        "Monday": "Mon",
+        "Tuesday": "Tue",
+        "Wednesday": "Wed",
+        "Thursday": "Thu",
+        "Friday": "Fri",
+        "Saturday": "Sat"
+      },
+      "initial": {
+        "Sunday": "S",
+        "Monday": "M",
+        "Tuesday": "T",
+        "Wednesday": "W",
+        "Thursday": "T",
+        "Friday": "F",
+        "Saturday": "S"
+      }
+    },
+    "timeline": {
+      "enterTimes": "Enter a start and an end time to see the shift.",
+      "sameTimes": "The start and end are the same time. Change one of them to see the shift.",
+      "start": "Start",
+      "end": "End",
+      "midnight": "Midnight",
+      "lateAfter": "Late after",
+      "earlyBefore": "Early out before",
+      "windowFrom": "Punches count from",
+      "windowUntil": "until",
+      "crossesMidnight": "The shift crosses midnight.",
+      "halfDayBand": "Half day",
+      "presentBand": "Present",
+      "halfDayMark": "Half day below",
+      "availableMark": "Whole shift less break",
+      "fullDayMark": "Full day at",
+      "nextDay": "the next day",
+      "previousDay": "the day before",
+      "key": {
+        "label": "Timeline key",
+        "window": "Punch window",
+        "shift": "Shift",
+        "grace": "Grace (not late / not early)",
+        "break": "Break, deducted (no fixed time)"
+      }
+    },
+    "shifts": {
+      "title": "Shifts",
+      "pageTitle": "Shift",
+      "description": "Working hours, grace and punch windows that attendance is calculated against. Shifts are retired, never deleted.",
+      "add": "Add shift",
+      "caption": "Shifts with their hours, break, grace and day thresholds",
+      "emptyFiltered": "No shift matches. Search by code or part of the name.",
+      "empty": {
+        "active": "No active shifts. Add one, then give employees a default shift or roster them.",
+        "retired": "No retired shifts.",
+        "all": "No shifts yet. Add one, then give employees a default shift or roster them."
+      },
+      "columns": {
+        "hours": "Hours",
+        "break": "Break",
+        "grace": "Grace in / out",
+        "graceTitle": "Grace in / grace out, in minutes",
+        "days": "Full / half day",
+        "daysTitle": "Worked time for a full day / below which it is a half day"
+      },
+      "minutes": "{minutes} min",
+      "minutesUnit": "min",
+      "nightShift": "Night shift, ends the next day",
+      "retire": {
+        "title": "Retire {name}?",
+        "description": "It stays in rosters and attendance history but can't be assigned any more. Give its employees another default shift first, or the retirement is refused.",
+        "confirm": "Retire shift",
+        "done": "{name} retired."
+      },
+      "restore": {
+        "title": "Restore {name}?",
+        "description": "It can be given to employees and rostered again.",
+        "confirm": "Restore shift",
+        "done": "{name} restored."
+      },
+      "notFound": "This shift doesn't exist. Check the link, or find it in the shift list.",
+      "backToList": "Back to shifts",
+      "addTitle": "Add shift",
+      "addDescription": "Set the hours first: the timeline shows what every other setting does to a real day.",
+      "editTitle": "Edit {name}",
+      "editDescription": "Changes apply to every date processed from now on, including past dates processed again. To change hours from a given date, add a new shift and roster it instead.",
+      "saved": "{name} saved.",
+      "created": "{name} added.",
+      "readOnly": "You can look at this shift but not change it. Changing shifts needs the shift setup permission.",
+      "preview": "Preview",
+      "summaryDay": "{start}–{end} · {length} long · {paid} after the break",
+      "summaryNight": "Night shift · {start}–{end} next day · {length} long · {paid} after the break",
+      "sections": {
+        "identity": "Shift",
+        "hours": "Hours and break",
+        "grace": "Grace",
+        "thresholds": "Worked time for a half and a full day",
+        "window": "Punch window"
+      },
+      "fields": {
+        "code": "Code",
+        "name": "Name",
+        "startTime": "Starts",
+        "endTime": "Ends",
+        "breakMinutes": "Break",
+        "graceInMinutes": "Grace in",
+        "graceOutMinutes": "Grace out",
+        "fullDayMinutes": "Full day",
+        "halfDayThresholdMinutes": "Half-day threshold",
+        "punchWindowBeforeMinutes": "Before the start",
+        "punchWindowAfterMinutes": "After the end"
+      },
+      "hints": {
+        "code": "Short, shown in roster cells. Stored in capitals, e.g. GEN or NIGHT-A.",
+        "graceIn": "Minutes after the start before arriving counts as late. 0 to {max}.",
+        "graceOut": "Minutes before the end that leaving doesn't count as early. 0 to {max}.",
+        "fullDay": "Worked time that makes a full day.",
+        "halfDay": "Worked time below this, but above none, is a half day.",
+        "windowBefore": "How early a punch still counts for this shift.",
+        "windowAfter": "How late a punch still counts for this shift."
+      },
+      "explain": {
+        "enterTimes": "Enter a start and an end time.",
+        "sameTimes": "A shift can't start and end at the same time.",
+        "day": "Runs from <start></start> to <end></end>, {length} in all.",
+        "night": "Runs overnight, from <start></start> to <end></end> (+1 is the next day), {length} in all. The whole shift belongs to the day it starts: a Monday 22:00 start is Monday's attendance, punches after midnight included (BR-12).",
+        "break": "{minutes} minutes are deducted from the time between first in and last out (BR-02), leaving {paid} of work in a full shift. The break isn't tied to a time of day, so the timeline draws it in the middle.",
+        "noBreak": "No break: worked time is the whole time between first in and last out (BR-02).",
+        "graceIn": "Arriving up to <until></until> isn't late; arriving after it is (BR-03). With {minutes} minutes of grace, someone 6 minutes behind <start></start> is on time.",
+        "noGraceIn": "No grace: arriving even a minute after <start></start> is late.",
+        "graceOut": "Leaving from <from></from> isn't an early out; leaving before it is. That is {minutes} minutes before <end></end>.",
+        "noGraceOut": "No grace: leaving even a minute before <end></end> is an early out.",
+        "graceIsNotTime": "Grace doesn't add working time or move the shift. It only decides where late-in and early-out begin.",
+        "halfDay": "Worked time below {hours}, but above none, makes the day a half day (BR-04).",
+        "fullDay": "{hours} of worked time makes a full day.",
+        "absent": "A working day with no punch at all, that isn't a weekly off, holiday or approved leave, is absent (BR-01).",
+        "window": "A punch from <from></from> to <until></until> counts for this shift's day. A punch outside it is looked for on another day, which is what keeps both punches of a night shift on its start date.",
+        "windowIsNotGrace": "The punch window isn't grace: it decides which day a punch belongs to, never whether it is late."
+      }
+    },
+    "patterns": {
+      "title": "Weekly-off patterns",
+      "description": "Which days are regular days off, e.g. every Friday plus alternate Saturdays. A pattern's days can't change once it exists, so past weekly offs never move.",
+      "add": "Add pattern",
+      "addTitle": "Add a weekly-off pattern",
+      "listLabel": "Weekly-off patterns",
+      "search": "Search patterns",
+      "searchPlaceholder": "Name",
+      "status": "Status",
+      "statuses": {
+        "active": "Active",
+        "retired": "Retired",
+        "all": "All"
+      },
+      "emptyFiltered": "No pattern matches. Search by part of the name.",
+      "empty": {
+        "active": "No active patterns yet.",
+        "retired": "No retired patterns.",
+        "all": "No patterns yet."
+      },
+      "pick": {
+        "title": "Pick a pattern",
+        "body": "Choose a pattern on the left to see its days and how the coming months look.",
+        "bodyWrite": "Choose a pattern on the left to see its days and how the coming months look, or add one."
+      },
+      "created": "{name} added.",
+      "renamed": "Renamed to {name}.",
+      "rename": "Rename",
+      "fields": {
+        "name": "Name",
+        "days": "Days off"
+      },
+      "hints": {
+        "name": "Say what it is, e.g. “Friday + alternate Saturdays”."
+      },
+      "presets": {
+        "label": "Start from",
+        "friday": "Friday",
+        "fridayAlternateSaturdays": "Friday + alternate Saturdays",
+        "fridaySaturday": "Friday + Saturday",
+        "saturdaySunday": "Saturday + Sunday"
+      },
+      "summaryLabel": "In words:",
+      "summary": {
+        "none": "No days off.",
+        "sentence": "Off {list}.",
+        "every": "every {day}",
+        "ordinal": "{week, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+        "some": "the {weeks} {day} of the month"
+      },
+      "weekOfMonthNote": "Week 2 means the second of that weekday in the month (days 8–14), not the second row of a calendar. So alternate Saturdays are the 2nd and 4th; a 5th one only happens in some months.",
+      "preview": {
+        "title": "How the coming months look",
+        "count": "{count, plural, =0 {no days off} one {# day off} other {# days off}}",
+        "offDays": "Days off: {dates}.",
+        "noOffDays": "No days off this month."
+      },
+      "fixedNotice": "The days can't be changed once the pattern is saved, so past weekly offs never change. To use other days later, add a new pattern, move employees to it, then retire this one.",
+      "retire": {
+        "action": "Retire",
+        "title": "Retire {name}?",
+        "description": "It stays in history but can't be given to employees any more. Move the employees who follow it to another pattern first, or the retirement is refused.",
+        "confirm": "Retire pattern",
+        "done": "{name} retired."
+      },
+      "restore": {
+        "action": "Restore",
+        "title": "Restore {name}?",
+        "description": "It can be given to employees again.",
+        "confirm": "Restore pattern",
+        "done": "{name} restored."
+      },
+      "grid": {
+        "caption": "Days off by weekday: every week, or particular weeks of the month",
+        "week": "Week of the month",
+        "everyWeek": "Every week",
+        "everyWeekLabel": "Every {day}",
+        "weekRow": "{week, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+        "weekDays": "{from}–{to}",
+        "weekLabel": "{day} in week {week} of the month"
+      }
+    },
+    "holidays": {
+      "title": "Holiday calendar",
+      "description": "Public holidays by year, everywhere or only at some locations. A holiday sets the day type and the higher OT multiplier.",
+      "add": "Add holiday",
+      "filters": "Year and location",
+      "previousYear": "Previous year",
+      "nextYear": "Next year",
+      "thisYear": "This year",
+      "location": "Location",
+      "allLocations": "All locations",
+      "loading": "Loading…",
+      "count": "{count, plural, =0 {No holidays} one {# holiday} other {# holidays}}{optional, plural, =0 {} other {, # optional}}",
+      "listLabel": "Holidays in {year}",
+      "empty": "No holidays in {year} yet. Add them from the official list, or click a date on the calendar.",
+      "emptyLocation": "No holidays apply at this location in {year}.",
+      "cellLabel": "{date}: {names}",
+      "cellEmpty": "{date}, add a holiday",
+      "optional": "Optional",
+      "everywhere": "Everywhere",
+      "someLocations": "Only at some locations",
+      "retiredLocation": "{name} (retired)",
+      "chooseLocation": "Choose at least one location, or make the holiday apply everywhere.",
+      "legend": {
+        "label": "Calendar key",
+        "holiday": "Holiday",
+        "limited": "Only at some locations",
+        "optional": "Optional: listed, but a normal working day",
+        "today": "Today"
+      },
+      "edit": "Edit {name}",
+      "view": "View {name}",
+      "remove": "Remove {name}",
+      "removeShort": "Remove",
+      "close": "Close",
+      "saved": "{name} saved.",
+      "created": "{name} added.",
+      "addTitle": "Add a holiday",
+      "editTitle": "Edit {name}",
+      "dialogDescription": "Holidays make the day a holiday in attendance and apply the holiday OT multiplier.",
+      "noRecalculation": "Dates already processed aren't recalculated by this change. Reprocess them if the holiday moved.",
+      "fields": {
+        "name": "Name",
+        "date": "Date",
+        "optional": "Optional holiday",
+        "locations": "Applies at",
+        "description": "Description"
+      },
+      "hints": {
+        "optional": "Listed on the calendar, but it stays a working day for attendance and OT.",
+        "everywhere": "Every work location observes it.",
+        "someLocations": "Only employees at the ticked locations get the holiday."
+      },
+      "delete": {
+        "title": "Remove {name}?",
+        "description": "{date} goes back to being a normal day. The holiday stays in the history. Dates already processed aren't recalculated by this.",
+        "confirm": "Remove holiday",
+        "done": "{name} removed."
+      }
+    },
+    "roster": {
+      "title": "Team roster",
+      "descriptionCompany": "Who works which shift, day by day. Drag across cells to select them, then assign a shift. Pick a department to work on one line at a time.",
+      "descriptionTeam": "Who in your team works which shift, day by day. Drag across cells to select them, then assign a shift.",
+      "filters": "Department and period",
+      "department": "Department",
+      "allDepartments": "All departments",
+      "myTeam": "My whole team",
+      "previous": {
+        "month": "Previous month",
+        "fortnight": "Previous two weeks"
+      },
+      "next": {
+        "month": "Next month",
+        "fortnight": "Next two weeks"
+      },
+      "today": "Today",
+      "viewLabel": "Period",
+      "views": {
+        "month": "Month",
+        "fortnight": "2 weeks"
+      },
+      "gridLabel": "Roster for {period}",
+      "employee": "Employee",
+      "selectDate": "Select {date} for everyone",
+      "selectEmployee": "Select every date for {name}",
+      "defaultShift": "Default {code}",
+      "noDefaultShift": "No default shift",
+      "emptyDepartment": "No active employees in this department that you can roster. Choose another department.",
+      "emptyCompany": "No active employees to roster yet.",
+      "emptyTeam": "No one reports to you yet, so there is no one to roster.",
+      "cell": {
+        "beforeJoining": "not joined yet",
+        "weeklyOff": "weekly off",
+        "holiday": "holiday, {name}",
+        "shift": "shift {code}, {name}",
+        "noShift": "no shift",
+        "rostered": "rostered for this date",
+        "default": "default"
+      },
+      "selection": {
+        "label": "Selected cells",
+        "count": "{employees, plural, one {# employee} other {# employees}} × {days, plural, one {# day} other {# days}}",
+        "shift": "Shift",
+        "chooseShift": "Choose a shift",
+        "remarks": "Remarks",
+        "remarksPlaceholder": "Optional, e.g. covering for Line 2",
+        "assign": "Assign",
+        "clear": "{count, plural, =0 {Reset to default} other {Reset # to default}}",
+        "nothingToClear": "Nothing here is rostered: these dates already follow the defaults.",
+        "deselect": "Clear the selection",
+        "assigned": "{code} rostered for {employees, plural, one {# employee} other {# employees}} × {days, plural, one {# day} other {# days}}: {created} added, {updated} changed.",
+        "cleared": "{removed, plural, =0 {Nothing to reset.} one {# date reset to the default.} other {# dates reset to the default.}}",
+        "joiningNote": "Dates before someone joined are skipped.",
+        "empty": "Nothing selected. Drag across cells, or use Shift+arrow keys."
+      },
+      "override": {
+        "label": "Day type",
+        "pattern": "Follow the weekly-off pattern",
+        "working": "Working day",
+        "off": "Weekly off",
+        "hint": {
+          "pattern": "Weekly offs stay where the employee's pattern puts them; only the shift changes.",
+          "working": "Makes these dates working days even if the pattern says off, e.g. a swapped day off.",
+          "off": "Makes these dates weekly offs, e.g. the day off in a swap."
+        }
+      },
+      "legend": {
+        "label": "Roster key",
+        "code": "Code",
+        "rostered": "Rostered for that date",
+        "default": "The employee's default shift",
+        "weeklyOff": "Weekly off",
+        "holiday": "Holiday",
+        "beforeJoining": "Before joining",
+        "howTo": "Drag, or Shift+arrows, to select. Click a date or a name for a whole column or row. Esc clears."
+      },
+      "bulk": {
+        "open": "Bulk assign",
+        "title": "Roster a department",
+        "description": "One shift for every active employee of a department, over up to {max} days.",
+        "department": "Department",
+        "chooseDepartment": "Choose a department",
+        "from": "From",
+        "to": "To",
+        "shift": "Shift",
+        "chooseShift": "Choose a shift",
+        "remarks": "Remarks",
+        "remarksHint": "Optional. Kept on every entry, e.g. “Ramadan hours”.",
+        "preview": "{shift} for {department}, {days, plural, one {# day} other {# days}}: {from} to {to}.",
+        "previewIncomplete": "Choose a department, dates and a shift to see what will change.",
+        "rules": {
+          "scope": "Only the department's own employees in your part of the organization; not its sub-departments.",
+          "overwrite": "Entries already rostered on these dates are replaced.",
+          "joining": "Dates before someone joined are skipped."
+        },
+        "submit": "Assign",
+        "submitDays": "{days, plural, one {Assign # day} other {Assign # days}}",
+        "done": "{shift} rostered for {employees, plural, one {# employee} other {# employees}} × {days, plural, one {# day} other {# days}}: {created} added, {updated} changed."
+      }
+    },
+    "employee": {
+      "title": "Default shift and weekly offs",
+      "defaultShift": "Default shift",
+      "weeklyOffPattern": "Weekly-off pattern",
+      "noShift": "No default shift. Days without a roster entry have no shift.",
+      "noPattern": "No pattern: no regular weekly off.",
+      "noShiftOption": "No default shift",
+      "noPatternOption": "No regular weekly off",
+      "retired": "(retired)",
+      "nightShift": "Night shift, ends the next day",
+      "shiftHint": "Worked on every day the roster doesn't say otherwise.",
+      "patternHint": "Which days are regular days off.",
+      "appliesFromNow": "Applies to every date processed from now on, not only future ones. To change a date that is already processed, roster it instead.",
+      "change": "Change",
+      "openRoster": "Open the team roster",
+      "saved": "{name}'s default shift and weekly offs saved.",
+      "monthTitle": "How each day works out",
+      "monthLabel": "{name}'s days in {month}",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "legend": {
+        "label": "Calendar key",
+        "rostered": "Rostered for that date",
+        "default": "Default shift",
+        "weeklyOff": "Weekly off",
+        "holiday": "Holiday"
+      }
+    }
   }
 }

@@ -64,13 +64,19 @@ export const masterDataParamsSchema = z.object({
   status: z.enum(["active", "retired", "all"]).catch("active").default("active"),
 })
 
+const noExtraText = () => ""
+
 /**
  * Search and status filter for a short master-data list. The lists are small and fully loaded, so the
  * filtering happens here, instantly; the filter still lives in the URL (§4.5).
+ *
+ * `extraText` must be a stable function (module level or memoized). The filtered array is the table's
+ * `data`, and TanStack Table resets its page on every new `data`, which re-renders: a new function each
+ * render would loop forever.
  */
 export function useMasterDataFilter<T extends { code: string; name: string; isActive: boolean }>(
   rows: T[] | undefined,
-  extraText: (row: T) => string = () => "",
+  extraText: (row: T) => string = noExtraText,
 ) {
   const [params, setParams] = useUrlState(masterDataParamsSchema)
   const filtered = useMemo(() => {

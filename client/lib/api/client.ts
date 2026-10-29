@@ -37,7 +37,7 @@ export class ApiError extends Error {
 }
 
 type RequestOptions = {
-  method?: "GET" | "POST" | "PUT"
+  method?: "GET" | "POST" | "PUT" | "DELETE"
   body?: unknown
   signal?: AbortSignal
 }
@@ -124,6 +124,7 @@ export const backend = {
     request<T>(withQuery(`/api/backend/${path}`, query), { signal }),
   post: <T>(path: string, body?: unknown) => request<T>(`/api/backend/${path}`, { method: "POST", body }),
   put: <T>(path: string, body: unknown) => request<T>(`/api/backend/${path}`, { method: "PUT", body }),
+  delete: <T = void>(path: string) => request<T>(`/api/backend/${path}`, { method: "DELETE" }),
 }
 
 /** Calls one of the auth Route Handlers: `auth("login", { email, password })`. */

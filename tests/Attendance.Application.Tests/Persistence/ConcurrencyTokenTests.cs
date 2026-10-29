@@ -27,9 +27,9 @@ public sealed class ConcurrencyTokenTests : IDisposable
         var secondRead = await second.RefreshTokens.SingleAsync(t => t.Id == tokenId, Ct);
 
         firstRead.Revoke(Now, replacedByTokenHash: "FIRST");
-        await new UnitOfWork(first).SaveChangesAsync(Ct);
+        await new UnitOfWork(first, new RecordingDomainEventDispatcher()).SaveChangesAsync(Ct);
         secondRead.Revoke(Now, replacedByTokenHash: "SECOND");
-        var act = () => new UnitOfWork(second).SaveChangesAsync(Ct);
+        var act = () => new UnitOfWork(second, new RecordingDomainEventDispatcher()).SaveChangesAsync(Ct);
 
         await act.Should().ThrowAsync<ConcurrencyConflictException>();
         await using var verify = _db.CreateContext();
@@ -46,9 +46,9 @@ public sealed class ConcurrencyTokenTests : IDisposable
         var secondRead = await second.Users.SingleAsync(u => u.Id == userId, Ct);
 
         firstRead.RegisterFailedLogin(Now, maxFailedAttempts: 5, TimeSpan.FromMinutes(15));
-        await new UnitOfWork(first).SaveChangesAsync(Ct);
+        await new UnitOfWork(first, new RecordingDomainEventDispatcher()).SaveChangesAsync(Ct);
         secondRead.RegisterFailedLogin(Now, maxFailedAttempts: 5, TimeSpan.FromMinutes(15));
-        var act = () => new UnitOfWork(second).SaveChangesAsync(Ct);
+        var act = () => new UnitOfWork(second, new RecordingDomainEventDispatcher()).SaveChangesAsync(Ct);
 
         await act.Should().ThrowAsync<ConcurrencyConflictException>("both read a count of 0 and would each write 1");
     }

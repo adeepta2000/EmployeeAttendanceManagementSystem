@@ -44,6 +44,12 @@ internal static class ModelBuilderConventions
                 entity.HasQueryFilter(SoftDeleteFilter, NotDeleted(clrType));
             }
 
+            // Raised events live in memory until the unit of work dispatches them; they are never stored.
+            if (typeof(IHasDomainEvents).IsAssignableFrom(clrType))
+            {
+                entity.Ignore(nameof(IHasDomainEvents.DomainEvents));
+            }
+
             foreach (var property in entityType.GetProperties().Where(IsUtcInstant))
             {
                 property.SetValueConverter(UtcConverter);

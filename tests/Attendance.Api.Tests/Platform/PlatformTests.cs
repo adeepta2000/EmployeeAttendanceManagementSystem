@@ -42,7 +42,7 @@ public sealed class PlatformTests(AttendanceApiFactory api)
     }
 
     [Fact]
-    public void The_OpenAPI_document_generates_and_lists_the_organization_endpoints()
+    public void The_OpenAPI_document_generates_and_lists_the_organization_and_scheduling_endpoints()
     {
         var document = api.Services.GetRequiredService<ISwaggerProvider>().GetSwagger("v1");
 
@@ -50,6 +50,8 @@ public sealed class PlatformTests(AttendanceApiFactory api)
         [
             "/api/departments", "/api/departments/{publicId}", "/api/designations", "/api/work-locations",
             "/api/employees", "/api/employees/{publicId}", "/api/employees/{publicId}/deactivate", "/api/employees/import",
+            "/api/shifts", "/api/weekly-off-patterns", "/api/holidays", "/api/rosters", "/api/rosters/{publicId}", "/api/rosters/bulk",
+            "/api/employees/{publicId}/schedule", "/api/employees/{publicId}/calendar",
         ]);
     }
 

@@ -2,7 +2,9 @@ using Attendance.Application.Common.Files;
 using Attendance.Application.Common.Interfaces;
 using Attendance.Application.Identity.Abstractions;
 using Attendance.Application.Organization.Abstractions;
+using Attendance.Application.Scheduling.Abstractions;
 using Attendance.Domain.Organization;
+using Attendance.Domain.Scheduling;
 using Attendance.Infrastructure.Background;
 using Attendance.Infrastructure.Email;
 using Attendance.Infrastructure.Files;
@@ -70,6 +72,12 @@ public static class DependencyInjection
         services.AddScoped<IMasterDataRepository<WorkLocation>, MasterDataRepository<WorkLocation>>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddSingleton<ISpreadsheetReader, ClosedXmlSpreadsheetReader>();
+
+        services.AddScoped<IMasterDataRepository<Shift>, MasterDataRepository<Shift>>();
+        services.AddScoped<IWeeklyOffPatternRepository, WeeklyOffPatternRepository>();
+        services.AddScoped<IRosterRepository, RosterRepository>();
+        services.AddScoped<IHolidayRepository, HolidayRepository>();
+        services.AddScoped<ICalendarRepository, CalendarRepository>();
 
         services.AddSingleton<IPasswordHasher, IdentityPasswordHasher>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();

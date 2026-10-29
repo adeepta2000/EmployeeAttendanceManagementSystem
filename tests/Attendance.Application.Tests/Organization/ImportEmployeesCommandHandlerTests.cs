@@ -1,6 +1,7 @@
 using Attendance.Application.Common.Files;
 using Attendance.Application.Organization.Employees.Import;
 using Attendance.Domain.Organization;
+using Attendance.Application.Tests.Persistence;
 using Attendance.Infrastructure.Persistence;
 using Attendance.Shared.Results;
 using FluentAssertions;
@@ -163,7 +164,7 @@ public sealed class ImportEmployeesCommandHandlerTests : IAsyncLifetime
             OrgHarness.MasterData<WorkLocation>(context),
             _org.Scopes(),
             new EmployeeImportRowValidator(),
-            new UnitOfWork(context),
+            new UnitOfWork(context, new RecordingDomainEventDispatcher()),
             NullLogger<ImportEmployeesCommandHandler>.Instance);
 
         var upload = new UploadedFile("staff.xlsx", EmployeeImportLimits.XlsxContentType, 1, Stream.Null);

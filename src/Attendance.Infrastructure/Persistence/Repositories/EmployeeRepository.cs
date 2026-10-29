@@ -2,6 +2,7 @@ using Attendance.Application.Common.Security;
 using Attendance.Application.Organization.Abstractions;
 using Attendance.Application.Organization.Employees;
 using Attendance.Domain.Organization;
+using Attendance.Domain.Scheduling;
 using Attendance.Shared.Paging;
 using Microsoft.EntityFrameworkCore;
 
@@ -63,6 +64,22 @@ internal sealed class EmployeeRepository(AttendanceDbContext db) : IEmployeeRepo
         return new PagedResult<Employee>(items, query.Page, query.PageSize, totalCount);
     }
 
+    public async Task<IReadOnlyList<long>> FindActiveIdsAsync(
+        IReadOnlyCollection<Guid> publicIds, EmployeeScope scope, CancellationToken cancellationToken)
+    {
+        if (publicIds.Count == 0)
+        {
+            return [];
+        }
+
+        var ids = publicIds.ToArray();
+        return await db.Employees
+            .InScope(scope)
+            .Where(e => e.IsActive && EF.Parameter(ids).Contains(e.PublicId))
+            .Select(e => e.Id)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<bool> CodeExistsAsync(string employeeCode, CancellationToken cancellationToken) =>
         db.Employees.AnyAsync(e => e.EmployeeCode == employeeCode, cancellationToken);
 
@@ -114,6 +131,12 @@ internal sealed class EmployeeRepository(AttendanceDbContext db) : IEmployeeRepo
     public Task<bool> AnyActiveAtWorkLocationAsync(long workLocationId, CancellationToken cancellationToken) =>
         db.Employees.AnyAsync(e => e.WorkLocationId == workLocationId && e.IsActive, cancellationToken);
 
+    public Task<bool> AnyActiveWithDefaultShiftAsync(long shiftId, CancellationToken cancellationToken) =>
+        db.Employees.AnyAsync(e => e.DefaultShiftId == shiftId && e.IsActive, cancellationToken);
+
+    public Task<bool> AnyActiveWithWeeklyOffPatternAsync(long patternId, CancellationToken cancellationToken) =>
+        db.Employees.AnyAsync(e => e.WeeklyOffPatternId == patternId && e.IsActive, cancellationToken);
+
     public void Add(Employee employee) => db.Employees.Add(employee);
 
     private static IQueryable<Employee> WithAssignments(IQueryable<Employee> employees) =>
@@ -121,7 +144,9 @@ internal sealed class EmployeeRepository(AttendanceDbContext db) : IEmployeeRepo
             .Include(e => e.Department)
             .Include(e => e.Designation)
             .Include(e => e.WorkLocation)
-            .Include(e => e.ReportingManager);
+            .Include(e => e.ReportingManager)
+            .Include(e => e.DefaultShift)
+            .Include(e => e.WeeklyOffPattern);
 
     // The Id tiebreaker keeps paging stable when the sort key has duplicates.
     private static IQueryable<Employee> Sort(IQueryable<Employee> employees, EmployeeSortField sortBy, SortDirection direction) =>
@@ -156,5 +181,17 @@ internal static class EmployeeScopeQueryExtensions
 
         var ids = scope.EmployeeIds.ToArray();
         return employees.Where(e => EF.Parameter(ids).Contains(e.Id));
+    }
+
+    /// <summary>The same filter for roster entries, applied to the entry's employee.</summary>
+    public static IQueryable<EmployeeShiftRoster> InScope(this IQueryable<EmployeeShiftRoster> rosters, EmployeeScope scope)
+    {
+        if (scope.IsCompanyWide)
+        {
+            return rosters;
+        }
+
+        var ids = scope.EmployeeIds.ToArray();
+        return rosters.Where(r => EF.Parameter(ids).Contains(r.EmployeeId));
     }
 }

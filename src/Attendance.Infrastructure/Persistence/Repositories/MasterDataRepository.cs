@@ -16,6 +16,17 @@ internal class MasterDataRepository<T>(AttendanceDbContext db) : IMasterDataRepo
     public Task<T?> FindAsync(Guid publicId, CancellationToken cancellationToken) =>
         Query.SingleOrDefaultAsync(e => e.PublicId == publicId, cancellationToken);
 
+    public async Task<IReadOnlyList<T>> FindManyAsync(IReadOnlyCollection<Guid> publicIds, CancellationToken cancellationToken)
+    {
+        if (publicIds.Count == 0)
+        {
+            return [];
+        }
+
+        var ids = publicIds.ToArray();
+        return await Query.Where(e => EF.Parameter(ids).Contains(e.PublicId)).ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<T>> ListAsync(bool? isActive, CancellationToken cancellationToken) =>
         await Query.AsNoTracking()
             .Where(e => isActive == null || e.IsActive == isActive)

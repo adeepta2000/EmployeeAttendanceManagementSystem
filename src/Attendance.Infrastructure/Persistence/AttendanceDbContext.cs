@@ -1,5 +1,6 @@
 using Attendance.Domain.Identity;
 using Attendance.Domain.Organization;
+using Attendance.Domain.Scheduling;
 using Microsoft.EntityFrameworkCore;
 
 namespace Attendance.Infrastructure.Persistence;
@@ -29,6 +30,19 @@ public class AttendanceDbContext(DbContextOptions<AttendanceDbContext> options) 
     public DbSet<WorkLocation> WorkLocations => Set<WorkLocation>();
 
     public DbSet<Employee> Employees => Set<Employee>();
+
+    // Shift, roster and holidays
+    public DbSet<Shift> Shifts => Set<Shift>();
+
+    public DbSet<WeeklyOffPattern> WeeklyOffPatterns => Set<WeeklyOffPattern>();
+
+    public DbSet<WeeklyOffPatternDay> WeeklyOffPatternDays => Set<WeeklyOffPatternDay>();
+
+    public DbSet<EmployeeShiftRoster> EmployeeShiftRosters => Set<EmployeeShiftRoster>();
+
+    public DbSet<Holiday> Holidays => Set<Holiday>();
+
+    public DbSet<HolidayLocation> HolidayLocations => Set<HolidayLocation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

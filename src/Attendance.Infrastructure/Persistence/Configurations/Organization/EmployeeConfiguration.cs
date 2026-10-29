@@ -35,6 +35,14 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .WithMany()
             .HasForeignKey(e => e.ReportingManagerId);
 
+        builder.HasOne(e => e.DefaultShift)
+            .WithMany()
+            .HasForeignKey(e => e.DefaultShiftId);
+
+        builder.HasOne(e => e.WeeklyOffPattern)
+            .WithMany()
+            .HasForeignKey(e => e.WeeklyOffPatternId);
+
         // Spec §3.2 indexes. The composite one also serves the DepartmentId foreign key.
         builder.HasIndex(e => new { e.DepartmentId, e.IsActive })
             .HasDatabaseName("IX_Employees_DepartmentId_IsActive");

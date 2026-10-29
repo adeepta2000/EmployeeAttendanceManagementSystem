@@ -1,10 +1,11 @@
 "use client"
 
-import { useId, type ComponentProps, type ReactNode } from "react"
+import { useId, type ChangeEvent, type ComponentProps, type ReactNode } from "react"
 import { Controller, type Control, type FieldPath, type FieldValues } from "react-hook-form"
 
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useMessageText } from "@/lib/api/errors"
 import { cn } from "@/lib/utils"
@@ -84,35 +85,47 @@ export function TextField<T extends FieldValues>({
   placeholder,
   mono,
   autoFocus,
+  suffix,
   ...props
 }: FieldProps<T> & {
-  type?: "text" | "email" | "password" | "tel" | "date" | "search"
+  type?: "text" | "email" | "password" | "tel" | "date" | "time" | "search"
   autoComplete?: string
   inputMode?: ComponentProps<"input">["inputMode"]
   placeholder?: string
-  /** Employee codes and other identifiers render in JetBrains Mono (§4.2). */
+  /** Employee codes, times, durations and other identifiers render in JetBrains Mono (§4.2). */
   mono?: boolean
   autoFocus?: boolean
+  /** A unit shown inside the input's right edge, e.g. "min". */
+  suffix?: ReactNode
 }) {
   return (
     <FieldShell {...props}>
-      {(field, control) => (
-        <Input
-          {...control}
-          ref={field.ref}
-          name={field.name}
-          value={(field.value as string | null | undefined) ?? ""}
-          onChange={(event) => field.onChange(event.target.value)}
-          onBlur={field.onBlur}
-          type={type}
-          autoComplete={autoComplete}
-          inputMode={inputMode}
-          placeholder={placeholder}
-          disabled={props.disabled}
-          autoFocus={autoFocus}
-          className={cn(mono && "font-mono")}
-        />
-      )}
+      {(field, control) => {
+        const inputProps = {
+          ...control,
+          ref: field.ref,
+          name: field.name,
+          value: String((field.value as string | number | null | undefined) ?? ""),
+          onChange: (event: ChangeEvent<HTMLInputElement>) => field.onChange(event.target.value),
+          onBlur: field.onBlur,
+          type,
+          autoComplete,
+          inputMode,
+          placeholder,
+          disabled: props.disabled,
+          autoFocus,
+          className: cn(mono && "font-mono"),
+        }
+        if (!suffix) return <Input {...inputProps} />
+        return (
+          <InputGroup>
+            <InputGroupInput {...inputProps} />
+            <InputGroupAddon align="inline-end">
+              <InputGroupText className="text-13 font-normal">{suffix}</InputGroupText>
+            </InputGroupAddon>
+          </InputGroup>
+        )
+      }}
     </FieldShell>
   )
 }
@@ -126,38 +139,44 @@ export function SelectField<T extends FieldValues>({
   options,
   placeholder,
   noneLabel,
+  valueAs,
   ...props
 }: FieldProps<T> & {
   options: Option[]
   placeholder?: string
   /** For an optional field: the label of the "none" entry, which clears the value. */
   noneLabel?: string
+  /** For a field that isn't text, e.g. a nullable boolean: how an option maps to the field's value and back. */
+  valueAs?: { toField: (option: string) => unknown; fromField: (value: unknown) => string }
 }) {
   return (
     <FieldShell {...props}>
-      {(field, control) => (
-        <Select
-          name={field.name}
-          value={(field.value as string | null | undefined) || (noneLabel ? NONE : "")}
-          onValueChange={(value) => field.onChange(value === NONE ? "" : value)}
-          disabled={props.disabled}
-        >
-          <SelectTrigger {...control} ref={field.ref as never} onBlur={field.onBlur} className="w-full">
-            {/* Explicit text: Radix only fills SelectValue in after its items mount, which leaves a blank trigger. */}
-            <SelectValue placeholder={placeholder}>
-              {options.find((option) => option.value === field.value)?.label ?? (field.value ? undefined : noneLabel)}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent position="popper">
-            {noneLabel && <SelectItem value={NONE}>{noneLabel}</SelectItem>}
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+      {(field, control) => {
+        const selected = valueAs ? valueAs.fromField(field.value) : (field.value as string | null | undefined)
+        return (
+          <Select
+            name={field.name}
+            value={selected || (noneLabel ? NONE : "")}
+            onValueChange={(value) => field.onChange(valueAs ? valueAs.toField(value) : value === NONE ? "" : value)}
+            disabled={props.disabled}
+          >
+            <SelectTrigger {...control} ref={field.ref as never} onBlur={field.onBlur} className="w-full">
+              {/* Explicit text: Radix only fills SelectValue in after its items mount, which leaves a blank trigger. */}
+              <SelectValue placeholder={placeholder}>
+                {options.find((option) => option.value === selected)?.label ?? (selected ? undefined : noneLabel)}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent position="popper">
+              {noneLabel && <SelectItem value={NONE}>{noneLabel}</SelectItem>}
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )
+      }}
     </FieldShell>
   )
 }

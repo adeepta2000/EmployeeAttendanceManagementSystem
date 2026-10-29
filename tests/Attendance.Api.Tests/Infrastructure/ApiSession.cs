@@ -28,6 +28,8 @@ public sealed class ApiSession(HttpClient client, string accessToken, TestUser u
     public Task<HttpResponseMessage> PutAsync(string path, object body) =>
         SendAsync(HttpMethod.Put, path, JsonContent.Create(body, options: Json));
 
+    public Task<HttpResponseMessage> DeleteAsync(string path) => SendAsync(HttpMethod.Delete, path, content: null);
+
     public Task<HttpResponseMessage> PostFileAsync(string path, byte[] file, string fileName, string contentType)
     {
         var part = new ByteArrayContent(file);

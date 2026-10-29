@@ -73,10 +73,12 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    // Development serves plain HTTP only (the "http" launch profile, which the BFF calls), so there is
+    // no HTTPS port to redirect to.
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();

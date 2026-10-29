@@ -1,7 +1,9 @@
+using Attendance.Application.Common.Events;
 using Attendance.Application.Common.Interfaces;
 using Attendance.Application.Identity.Abstractions;
 using Attendance.Domain.Identity;
 using Attendance.Domain.Organization;
+using Attendance.Domain.Processing;
 using Attendance.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -34,6 +36,9 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
     /// <summary>Every email the app sent, instead of delivering it.</summary>
     public CapturingEmailSender Emails { get; } = new();
 
+    /// <summary>Every attendance recalculation the app requested.</summary>
+    public CapturingRecalculationHandler Recalculations { get; } = new();
+
     public async ValueTask InitializeAsync()
     {
         await _sqlServer.StartAsync(Ct);
@@ -61,6 +66,7 @@ public class AttendanceApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
             services.AddControllers().AddApplicationPart(typeof(ProbeController).Assembly);
             services.RemoveAll<IEmailSender>();
             services.AddSingleton<IEmailSender>(Emails);
+            services.AddSingleton<IDomainEventHandler<AttendanceRecalculationRequested>>(Recalculations);
         });
     }
 

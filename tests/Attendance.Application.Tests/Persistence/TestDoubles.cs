@@ -1,9 +1,22 @@
+using Attendance.Application.Common.Events;
 using Attendance.Application.Common.Interfaces;
 using Attendance.Domain.Common;
 using Attendance.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Attendance.Application.Tests.Persistence;
+
+/// <summary>Keeps every domain event the unit of work dispatches instead of running handlers.</summary>
+internal sealed class RecordingDomainEventDispatcher : IDomainEventDispatcher
+{
+    public List<IDomainEvent> Dispatched { get; } = [];
+
+    public Task DispatchAsync(IReadOnlyCollection<IDomainEvent> domainEvents, CancellationToken cancellationToken)
+    {
+        Dispatched.AddRange(domainEvents);
+        return Task.CompletedTask;
+    }
+}
 
 internal sealed class TestClock(DateTimeOffset now) : TimeProvider
 {

@@ -1,10 +1,12 @@
 using System.Reflection;
+using Attendance.Application.Common.Events;
 using Attendance.Application.Common.Messaging;
 using Attendance.Application.Common.Security;
 using Attendance.Application.Identity;
 using Attendance.Application.Identity.ForgotPassword;
 using Attendance.Application.Organization.Departments;
 using Attendance.Application.Organization.Employees;
+using Attendance.Application.Scheduling.Holidays;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,8 +32,27 @@ public static class DependencyInjection
         services.AddScoped<EmployeeScopeResolver>();
         services.AddScoped<DepartmentReferenceResolver>();
         services.AddScoped<EmployeeAssignmentResolver>();
+        services.AddScoped<HolidayLocationResolver>();
+
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddDomainEventHandlers(assembly);
 
         return services;
+    }
+
+    /// <summary>Registers every domain event handler in the assembly. An event may have several; all of them run.</summary>
+    private static void AddDomainEventHandlers(this IServiceCollection services, Assembly assembly)
+    {
+        var handlers = assembly.GetTypes()
+            .Where(type => type is { IsClass: true, IsAbstract: false, IsGenericTypeDefinition: false })
+            .SelectMany(type => type.GetInterfaces()
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDomainEventHandler<>))
+                .Select(service => (Implementation: type, Service: service)));
+
+        foreach (var (implementation, service) in handlers)
+        {
+            services.AddScoped(service, implementation);
+        }
     }
 
     /// <summary>

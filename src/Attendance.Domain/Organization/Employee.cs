@@ -1,4 +1,5 @@
 using Attendance.Domain.Common;
+using Attendance.Domain.Scheduling;
 
 namespace Attendance.Domain.Organization;
 
@@ -58,8 +59,18 @@ public sealed class Employee : BaseEntity, IHasPublicId
 
     public Employee? ReportingManager { get; set; }
 
-    // DefaultShiftId and WeeklyOffPatternId (spec §3.2) are added in Phase 2 together with the
-    // Shifts and WeeklyOffPatterns tables they reference.
+    /// <summary>
+    /// The shift the employee works unless a roster entry says otherwise (FR-2.3). Null until one is
+    /// assigned; processing then has no shift to measure the day against.
+    /// </summary>
+    public long? DefaultShiftId { get; set; }
+
+    public Shift? DefaultShift { get; set; }
+
+    /// <summary>The employee's regular weekly offs (FR-2.2). Null means none: every day is a working day unless rostered off.</summary>
+    public long? WeeklyOffPatternId { get; set; }
+
+    public WeeklyOffPattern? WeeklyOffPattern { get; set; }
 
     /// <summary>Display name. Not stored.</summary>
     public string FullName => $"{FirstName} {LastName}";

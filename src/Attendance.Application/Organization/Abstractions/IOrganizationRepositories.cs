@@ -13,6 +13,9 @@ public interface IMasterDataRepository<T>
     /// <summary>Finds a row by PublicId, active or not. Tracked.</summary>
     Task<T?> FindAsync(Guid publicId, CancellationToken cancellationToken);
 
+    /// <summary>The rows with these PublicIds, active or not, in one query. Unknown IDs are left out. Tracked.</summary>
+    Task<IReadOnlyList<T>> FindManyAsync(IReadOnlyCollection<Guid> publicIds, CancellationToken cancellationToken);
+
     /// <summary>Every row, or only active or inactive ones, ordered by name. Not tracked.</summary>
     Task<IReadOnlyList<T>> ListAsync(bool? isActive, CancellationToken cancellationToken);
 
@@ -39,12 +42,18 @@ public interface IEmployeeRepository
     /// <summary>
     /// The employee, if it exists and is inside <paramref name="scope"/>; otherwise null, so callers can't
     /// tell "outside your scope" from "doesn't exist". Tracked, with department, designation, work
-    /// location and reporting manager loaded.
+    /// location, reporting manager, default shift and weekly-off pattern loaded.
     /// </summary>
     Task<Employee?> FindAsync(Guid publicId, EmployeeScope scope, CancellationToken cancellationToken);
 
     /// <summary>One page of the employees inside <paramref name="scope"/> that match the query. Not tracked.</summary>
     Task<PagedResult<Employee>> ListAsync(ListEmployeesQuery query, EmployeeScope scope, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Internal IDs of the employees with these PublicIds that are active and inside <paramref name="scope"/>.
+    /// Any other PublicId is left out, so the caller compares counts to find one that didn't resolve.
+    /// </summary>
+    Task<IReadOnlyList<long>> FindActiveIdsAsync(IReadOnlyCollection<Guid> publicIds, EmployeeScope scope, CancellationToken cancellationToken);
 
     /// <summary>True when any employee, active or not and in any scope, already has the code.</summary>
     Task<bool> CodeExistsAsync(string employeeCode, CancellationToken cancellationToken);
@@ -65,6 +74,10 @@ public interface IEmployeeRepository
     Task<bool> AnyActiveWithDesignationAsync(long designationId, CancellationToken cancellationToken);
 
     Task<bool> AnyActiveAtWorkLocationAsync(long workLocationId, CancellationToken cancellationToken);
+
+    Task<bool> AnyActiveWithDefaultShiftAsync(long shiftId, CancellationToken cancellationToken);
+
+    Task<bool> AnyActiveWithWeeklyOffPatternAsync(long patternId, CancellationToken cancellationToken);
 
     void Add(Employee employee);
 }

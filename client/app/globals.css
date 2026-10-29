@@ -75,6 +75,11 @@
   /* 8px spacing base: p-1 is 8px, h-5 is 40px, p-0.5 is the 4px half step. */
   --spacing: 8px;
 
+  /* §4.6: setup and master-data screens are desktop only. Below 900px they show a message instead
+     (components/desktop-only.tsx); with the 224px sidebar that leaves at least 676px of content. In rem
+     like Tailwind's own breakpoints: a px value can't be ordered against them, and the variant is dropped. */
+  --breakpoint-desk: 56.25rem; /* 900px */
+
   /* Type scale: 12 / 13 / 14 / 16 / 20 / 24 / 30. Body 14 (text-14), table cells 13 (text-13), page
      titles 20 (text-20). Tailwind's t-shirt sizes are removed so nothing off-scale can creep in. */
   --text-*: initial;

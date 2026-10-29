@@ -57,7 +57,7 @@ internal sealed class AuthHarness : IDisposable
     public async Task<Result<AuthTokens>> LoginAsync(string email, string password = Password)
     {
         await using var context = _db.CreateContext();
-        var unitOfWork = new UnitOfWork(context);
+        var unitOfWork = new UnitOfWork(context, new RecordingDomainEventDispatcher());
         var handler = new LoginCommandHandler(
             new UserRepository(context),
             new IdentityPasswordHasher(),
@@ -78,7 +78,7 @@ internal sealed class AuthHarness : IDisposable
         await using var context = _db.CreateContext();
         var repository = new RefreshTokenRepository(context);
         var refreshTokens = wrapRepository?.Invoke(repository) ?? repository;
-        var unitOfWork = new UnitOfWork(context);
+        var unitOfWork = new UnitOfWork(context, new RecordingDomainEventDispatcher());
         var handler = new RefreshTokenCommandHandler(
             refreshTokens,
             TokenGenerator,
@@ -97,7 +97,7 @@ internal sealed class AuthHarness : IDisposable
         var handler = new LogoutCommandHandler(
             refreshTokens,
             TokenGenerator,
-            CreateSessions(context, refreshTokens, new UnitOfWork(context)),
+            CreateSessions(context, refreshTokens, new UnitOfWork(context, new RecordingDomainEventDispatcher())),
             Clock,
             NullLogger<LogoutCommandHandler>.Instance);
 

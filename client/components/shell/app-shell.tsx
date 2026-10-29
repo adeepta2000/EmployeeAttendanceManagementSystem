@@ -119,7 +119,7 @@ export function AppShell({ groups, initialCollapsed, canSearchEmployees, userPro
             onClick={() => setMobileOpen(false)}
           />
         )}
-        <main id="main" tabIndex={-1} className="min-w-0 flex-1 overflow-auto focus:outline-none">
+        <main id="main" tabIndex={-1} className="relative min-w-0 flex-1 overflow-auto focus:outline-none">
           {children}
         </main>
       </div>

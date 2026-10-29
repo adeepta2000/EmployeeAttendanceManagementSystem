@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarClockIcon, FileTextIcon, PalmtreeIcon } from "lucide-react"
+import { FileTextIcon, PalmtreeIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import { z } from "zod"
@@ -35,6 +35,8 @@ type Props = {
   /** One element per tab: the content of the record's own tabs (profile, employment). */
   profile: ReactNode
   employment: ReactNode
+  /** The Shift tab, for a saved record (it reads and writes the schedule on its own). */
+  shift?: ReactNode
   footer?: ReactNode
 }
 
@@ -52,6 +54,7 @@ export function EmployeeFrame({
   tabsWithErrors = [],
   profile,
   employment,
+  shift,
   footer,
 }: Props) {
   const t = useTranslations("employees.detail")
@@ -93,9 +96,7 @@ export function EmployeeFrame({
           <TabsContent value="employment" forceMount className="data-[state=inactive]:hidden">
             {employment}
           </TabsContent>
-          <TabsContent value="shift">
-            <ComingLater icon={<CalendarClockIcon aria-hidden="true" />} title={t("shift.title")} body={t("shift.body")} />
-          </TabsContent>
+          <TabsContent value="shift">{shift}</TabsContent>
           <TabsContent value="leave">
             <ComingLater icon={<PalmtreeIcon aria-hidden="true" />} title={t("leave.title")} body={t("leave.body")} />
           </TabsContent>
